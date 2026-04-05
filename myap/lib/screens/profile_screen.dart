@@ -19,7 +19,28 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/logout', (route) => false),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false),
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.indigo),
+            onSelected: (value) {
+              switch (value) {
+                case 'login':
+                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                  break;
+                case 'register':
+                  Navigator.pushNamed(context, '/signup');
+                  break;
+                case 'logout':
+                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                  break;
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'login', child: Text('Login')),
+              PopupMenuItem(value: 'register', child: Text('Register')),
+              PopupMenuItem(value: 'logout', child: Text('Logout')),
+            ],
           ),
         ],
       ),
