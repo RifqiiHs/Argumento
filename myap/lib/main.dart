@@ -1,31 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:myap/ImagePicker2.dart';
-import 'package:myap/imagePicker.dart';
-import 'package:myap/sesi66666.dart';
+import 'screens/login_screen.dart';
+import 'screens/signup_screen.dart';
+import 'screens/dashboard_screen.dart';
+import 'screens/analysis_screen.dart';
+import 'screens/result_screen.dart';
+import 'screens/campaign_screen.dart';
+import 'screens/shop_screen.dart';
+import 'screens/leaderboard_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/logout_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ArgumentoApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+/// Root application widget for Argumento.
+/// Sets up named routes and shared theme styling.
+class ArgumentoApp extends StatelessWidget {
+  const ArgumentoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Argumento',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.indigo,
+        scaffoldBackgroundColor: const Color(0xFFF6F7FF),
+        textTheme: Theme.of(context).textTheme.apply(
+              bodyColor: Colors.grey.shade900,
+              displayColor: Colors.grey.shade900,
+            ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // home: const ImageCarousel(
-      //   imageUrls: [
-      //     "assets/image/hotdog.jpg",
-      //     "assets/image/ringed-planet-3840x2160-25389.jpg",
-      //     "assets/image/cocacola.jpg",
-      //   ],
-      // ),
-      home: Sesi66666(),
+      initialRoute: '/login',
+      routes: {
+        '/login': (_) => const LoginScreen(),
+        '/signup': (_) => const SignupScreen(),
+        '/dashboard': (_) => const DashboardScreen(),
+        '/analysis': (_) => const AnalysisScreen(),
+        '/result': (_) => const ResultScreen(),
+        '/campaign': (_) => const CampaignScreen(),
+        '/shop': (_) => const ShopScreen(),
+        '/leaderboard': (_) => const LeaderboardScreen(),
+        '/profile': (_) => const ProfileScreen(),
+        '/logout': (_) => const LogoutScreen(),
+      },
     );
   }
 }
