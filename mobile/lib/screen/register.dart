@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:myapp/screen/login.dart';
+import 'package:mobile/screen/login.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard.dart';
@@ -16,17 +16,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmationPasswordController = TextEditingController();
-  
+  final TextEditingController _confirmationPasswordController =
+      TextEditingController();
+
   bool _isLoading = false;
   String _errorMessage = '';
 
   final url = Uri.parse('https://argumento-api.vercel.app/api/auth/register');
   Future<void> _login() async {
-    _isLoading = true;
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      if (_passwordController.text != _confirmationPasswordController.text)
-      {
+      if (_passwordController.text != _confirmationPasswordController.text) {
         setState(() {
           _errorMessage = 'Password and Confirmation Password do not match';
         });
@@ -42,18 +44,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }),
       );
 
-      if (response.statusCode == 200)
-      {
+      if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        
+
         final prefs = await SharedPreferences.getInstance();
 
         if (data['token'] != null) {
           await prefs.setString('token', data['token']);
         }
-        if (mounted)
-        {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const DashboardScreen()),
+          );
         }
       } else {
         setState(() {
@@ -69,60 +72,75 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _isLoading = false;
       });
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
-    body: Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
                 'Register',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 2),
-            ),
-            const SizedBox(height: 16),
-            TextField(
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
                 controller: _usernameController,
                 keyboardType: TextInputType.text,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Username',
                   labelStyle: const TextStyle(color: Colors.greenAccent),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[800]!)),
-                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[800]!),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.greenAccent),
+                  ),
                 ),
               ),
 
-            const SizedBox(height: 16),
-            TextField(
+              const SizedBox(height: 16),
+              TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: const TextStyle(color: Colors.greenAccent),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[800]!)),
-                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[800]!),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.greenAccent),
+                  ),
                 ),
-            ),
+              ),
 
-            const SizedBox(height: 16),
-            TextField(
+              const SizedBox(height: 16),
+              TextField(
                 controller: _passwordController,
                 keyboardType: TextInputType.text,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: const TextStyle(color: Colors.greenAccent),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[800]!)),
-                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[800]!),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.greenAccent),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -133,8 +151,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: InputDecoration(
                   labelText: 'Confirmation Password',
                   labelStyle: const TextStyle(color: Colors.greenAccent),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[800]!)),
-                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[800]!),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.greenAccent),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -144,7 +166,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     _errorMessage,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               const SizedBox(height: 16),
@@ -152,35 +177,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
                   );
                 },
                 child: const Text(
                   'Dont have an account?',
                   style: TextStyle(
                     color: Colors.greenAccent,
-                    decoration: TextDecoration.underline, 
+                    decoration: TextDecoration.underline,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),              
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _isLoading ? null : _login, 
+                onPressed: _isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.greenAccent,
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(),
                 ),
-                child: _isLoading 
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
-                    : const Text('Login', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-              )
-          ],
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Register',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+              ),
+            ],
+          ),
         ),
-      )
-    )
-   );
+      ),
+    );
   }
 }

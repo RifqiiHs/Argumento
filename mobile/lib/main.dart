@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myapp/screen/landing.dart';
+import 'package:mobile/screen/landing.dart';
 
 void main() {
   runApp(const MyApp());
