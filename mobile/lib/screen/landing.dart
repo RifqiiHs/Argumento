@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/components/button.dart';
 import 'package:mobile/screen/login.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -15,22 +15,14 @@ class _LandingScreenState extends State<LandingScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text("Hello World"),
-          ElevatedButton(
+          const Text("Hello World"),
+          NeonButton(
+            label: 'Login',
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const LoginScreen()),
             ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.greenAccent,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(),
-            ),
-            child: const Text(
-              'Login',
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5),
-            ),
+            backgroundColor: Colors.greenAccent,
           ),
         ],
       ),

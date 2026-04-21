@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile/components/button.dart';
 import 'package:mobile/screen/login.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -192,14 +193,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
+              NeonButton(
                 onPressed: _isLoading ? null : _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.greenAccent,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(),
-                ),
+                backgroundColor: Colors.greenAccent,
                 child: _isLoading
                     ? const SizedBox(
                         height: 20,

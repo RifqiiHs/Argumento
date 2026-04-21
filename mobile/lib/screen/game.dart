@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/briefingStateComponent.dart';
-import 'package:mobile/components/gameState.dart';
-import 'package:mobile/components/manualStateComponent.dart';
+import 'package:mobile/components/screens/briefingStateComponent.dart';
+import 'package:mobile/components/screens/gameState.dart';
+import 'package:mobile/components/screens/manualStateComponent.dart';
 import 'package:mobile/screen/dashboard.dart';
 import 'package:mobile/screen/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';

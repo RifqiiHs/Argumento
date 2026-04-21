@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/components/button.dart';
+import 'package:mobile/components/screens/gameSetup.dart';
 import 'package:mobile/screen/game.dart';
 import 'package:mobile/screen/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -258,27 +260,22 @@ class DashboardScreen extends StatelessWidget {
                       width: 2.0,
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Daily Assignment"),
-                      SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: null,
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                            DashboardScheme.neonGreenAccent,
-                          ),
-                          foregroundColor: WidgetStatePropertyAll(
-                            Color.fromARGB(255, 0, 0, 0),
-                          ),
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero,
+                      const Text("Daily Assignment"),
+                      const SizedBox(height: 8),
+                      NeonButton(
+                        label: 'Initiate Shift',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const GameSetup(),
                             ),
-                          ),
-                        ),
-                        child: const Text("Initiate Shift"),
+                          );
+                        },
+                        backgroundColor: DashboardScheme.neonGreenAccent,
                       ),
                     ],
                   ),
@@ -297,27 +294,14 @@ class DashboardScreen extends StatelessWidget {
                       width: 2.0,
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Demo Mode"),
-                      SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: null,
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                            DashboardScheme.demoModeBlue,
-                          ),
-                          foregroundColor: WidgetStatePropertyAll(
-                            Color.fromARGB(255, 0, 0, 0),
-                          ),
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero,
-                            ),
-                          ),
-                        ),
-                        child: const Text("Start Demo Mode"),
+                      const Text("Demo Mode"),
+                      const SizedBox(height: 8),
+                      NeonButton(
+                        label: 'Start Demo Mode',
+                        backgroundColor: DashboardScheme.demoModeBlue,
                       ),
                     ],
                   ),
