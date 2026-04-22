@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:mobile/components/button.dart';
 import 'package:mobile/screen/login.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/providers/userProvider.dart';
 import 'dashboard.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,58 +19,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmationPasswordController =
       TextEditingController();
 
-  bool _isLoading = false;
-  String _errorMessage = '';
+  void _handleRegister() async {
+    final userProvider = context.read<UserProvider>();
+    await userProvider.register(
+      _usernameController.text,
+      _emailController.text,
+      _passwordController.text,
+      _confirmationPasswordController.text,
+    );
 
-  final url = Uri.parse('https://argumento-api.vercel.app/api/auth/register');
-  Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      if (_passwordController.text != _confirmationPasswordController.text) {
-        setState(() {
-          _errorMessage = 'Password and Confirmation Password do not match';
-        });
-        return;
+    if (!userProvider.authLoading && userProvider.errorMessage.isEmpty) {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
       }
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'username': _usernameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        final prefs = await SharedPreferences.getInstance();
-
-        if (data['token'] != null) {
-          await prefs.setString('token', data['token']);
-        }
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const DashboardScreen()),
-          );
-        }
-      } else {
-        setState(() {
-          _errorMessage = 'Invalid email or password';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Connection lost. Server down?';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -161,57 +124,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              if (_errorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    _errorMessage,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.redAccent,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
+              Consumer<UserProvider>(
+                builder: (context, userProvider, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (userProvider.errorMessage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Text(
+                            userProvider.errorMessage,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      NeonButton(
+                        onPressed: userProvider.authLoading
+                            ? null
+                            : _handleRegister,
+                        backgroundColor: Colors.greenAccent,
+                        child: userProvider.authLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.black,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Register',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                      ),
+                    ],
                   );
                 },
-                child: const Text(
-                  'Dont have an account?',
-                  style: TextStyle(
-                    color: Colors.greenAccent,
-                    decoration: TextDecoration.underline,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              NeonButton(
-                onPressed: _isLoading ? null : _login,
-                backgroundColor: Colors.greenAccent,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.black,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text(
-                        'Register',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
               ),
             ],
           ),

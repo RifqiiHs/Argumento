@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/components/button.dart';
 import 'package:mobile/components/screens/gameSetup.dart';
+import 'package:mobile/models/User.dart';
+import 'package:mobile/providers/userProvider.dart';
 import 'package:mobile/screen/game.dart';
 import 'package:mobile/screen/login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class DashboardScheme {
   static const Color black = Color(0xff000000);
@@ -19,6 +21,8 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+    final user = userProvider.user;
     return Scaffold(
       backgroundColor: DashboardScheme.black,
       appBar: AppBar(
@@ -56,8 +60,8 @@ class DashboardScreen extends StatelessWidget {
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),
                 onTap: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('token');
+                  final userProvider = context.read<UserProvider>();
+                  await userProvider.logOut();
                   if (!context.mounted) {
                     return;
                   }
@@ -98,8 +102,11 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "JohnDoe",
-                        style: TextStyle(fontSize: 32, fontWeight: .bold),
+                        "${user?.username}",
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -118,14 +125,17 @@ class DashboardScreen extends StatelessWidget {
                       width: 2.0,
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Total EXP"),
-                      SizedBox(height: 8),
+                      const Text("Total EXP"),
+                      const SizedBox(height: 8),
                       Text(
-                        "0",
-                        style: TextStyle(fontSize: 28, fontWeight: .bold),
+                        "${user?.totalExp}",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -144,14 +154,17 @@ class DashboardScreen extends StatelessWidget {
                       width: 2.0,
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Total Coins"),
-                      SizedBox(height: 8),
+                      const Text("Total Coins"),
+                      const SizedBox(height: 8),
                       Text(
-                        "0",
-                        style: TextStyle(fontSize: 28, fontWeight: .bold),
+                        "${user?.totalCoins}",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -170,28 +183,34 @@ class DashboardScreen extends StatelessWidget {
                       width: 2.0,
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Streak"),
-                      SizedBox(height: 8),
+                      const Text("Streak"),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("0", style: TextStyle(fontSize: 28)),
-                              SizedBox(height: 8),
-                              Text("Current"),
+                              Text(
+                                "${user?.currentStreak}",
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text("Current"),
                             ],
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("0", style: TextStyle(fontSize: 28)),
-                              SizedBox(height: 8),
-                              Text("Best"),
+                              Text(
+                                "${user?.bestStreak}",
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text("Best"),
                             ],
                           ),
                         ],
@@ -227,16 +246,21 @@ class DashboardScreen extends StatelessWidget {
                             fontFamily: GoogleFonts.firaCode().fontFamily,
                           ),
                           children: [
-                            TextSpan(text: "0.0% ["),
                             TextSpan(
-                              text: "0",
+                              text: user != null && user!.postsProcessed > 0
+                                  ? "${((user!.postsCorrect / user!.postsProcessed) * 100).toStringAsFixed(1)}% ["
+                                  : "0.0% [",
+                            ),
+                            TextSpan(
+                              text: "${user?.postsCorrect}",
                               style: TextStyle(
                                 color: DashboardScheme.neonGreenAccent,
                               ),
                             ),
                             TextSpan(text: " / "),
                             TextSpan(
-                              text: "0",
+                              text:
+                                  "${(user?.postsProcessed ?? 0) - (user?.postsCorrect ?? 0)}",
                               style: TextStyle(color: Colors.red),
                             ),
                             TextSpan(text: "]"),

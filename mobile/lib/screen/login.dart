@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:mobile/components/button.dart';
 import 'package:mobile/screen/register.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/providers/userProvider.dart';
 import 'dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,53 +13,23 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
-  String _errorMessage = '';
 
-  final url = Uri.parse('https://argumento-api.vercel.app/api/auth/login');
-  Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        }),
-      );
+  void _handleLogin() async {
+    final userProvider = context.read<UserProvider>();
+    await userProvider.login(
+      _usernameController.text,
+      _passwordController.text,
+    );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        final prefs = await SharedPreferences.getInstance();
-
-        if (data['token'] != null) {
-          await prefs.setString('token', data['token']);
-        }
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const DashboardScreen()),
-          );
-        }
-      } else {
-        setState(() {
-          _errorMessage = 'Invalid email or password';
-        });
+    if (!userProvider.authLoading && userProvider.errorMessage.isEmpty) {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
       }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Connection lost. Server down?';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -85,11 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                controller: _usernameController,
+                keyboardType: TextInputType.text,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Email',
+                  labelText: 'Username',
                   labelStyle: const TextStyle(color: Colors.greenAccent),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[800]!),
@@ -127,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 },
                 child: const Text(
-                  'Already have an account?',
+                  'Don\'t have an account? Register',
                   style: TextStyle(
                     color: Colors.greenAccent,
                     decoration: TextDecoration.underline,
@@ -136,38 +105,48 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              if (_errorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    _errorMessage,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.redAccent,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-
-              NeonButton(
-                onPressed: _isLoading ? null : _login,
-                backgroundColor: Colors.greenAccent,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.black,
-                          strokeWidth: 2,
+              Consumer<UserProvider>(
+                builder: (context, userProvider, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (userProvider.errorMessage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Text(
+                            userProvider.errorMessage,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      )
-                    : const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
+                      NeonButton(
+                        onPressed: userProvider.authLoading
+                            ? null
+                            : _handleLogin,
+                        backgroundColor: Colors.greenAccent,
+                        child: userProvider.authLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.black,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
                       ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
