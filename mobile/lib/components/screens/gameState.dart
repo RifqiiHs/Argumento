@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/theme/app_colors.dart';
 
 class GameStateComponent extends StatefulWidget {
   const GameStateComponent({super.key});
@@ -10,7 +11,7 @@ class GameStateComponent extends StatefulWidget {
 class _GameStateComponentState extends State<GameStateComponent> {
   @override
   Widget build(BuildContext context) {
-    const neon = Color(0xff00e676);
+    const neon = AppColors.neon;
     const deepBlack = Color(0xff03050a);
     const muted = Color(0xff7a7f88);
     const textWhite = Color(0xffdfe2e6);

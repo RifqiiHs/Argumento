@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/theme/app_colors.dart';
 
 class BriefingStateComponent extends StatefulWidget {
   const BriefingStateComponent({super.key});
@@ -10,7 +11,7 @@ class BriefingStateComponent extends StatefulWidget {
 class _BriefingStateComponentState extends State<BriefingStateComponent> {
   @override
   Widget build(BuildContext context) {
-    const neon = Color(0xff00e676);
+    const neon = AppColors.neon;
     const deepBlack = Color(0xff03050a);
     const muted = Color(0xff7a7f88);
     const textWhite = Color(0xffdfe2e6);

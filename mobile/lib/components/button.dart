@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/theme/app_colors.dart';
 
 class NeonButton extends StatelessWidget {
   final String label;
@@ -12,7 +13,7 @@ class NeonButton extends StatelessWidget {
     super.key,
     this.label = '',
     this.onPressed,
-    this.backgroundColor = const Color(0xff1dff90),
+    this.backgroundColor = AppColors.neon,
     this.foregroundColor = const Color.fromARGB(255, 0, 0, 0),
     this.icon,
     this.child,

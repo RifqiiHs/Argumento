@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/button.dart';
 import 'package:mobile/screen/login.dart';
+import 'package:mobile/theme/app_colors.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -22,7 +23,7 @@ class _LandingScreenState extends State<LandingScreen> {
               context,
               MaterialPageRoute(builder: (context) => const LoginScreen()),
             ),
-            backgroundColor: Colors.greenAccent,
+            backgroundColor: AppColors.neon,
           ),
         ],
       ),

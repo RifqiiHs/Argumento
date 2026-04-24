@@ -5,12 +5,17 @@ import 'package:mobile/components/screens/gameSetup.dart';
 import 'package:mobile/models/User.dart';
 import 'package:mobile/providers/userProvider.dart';
 import 'package:mobile/screen/game.dart';
+import 'package:mobile/screen/leaderboard.dart';
 import 'package:mobile/screen/login.dart';
+import 'package:mobile/screen/profile.dart';
+import 'package:mobile/screen/settings.dart';
+import 'package:mobile/screen/shop.dart';
+import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScheme {
   static const Color black = Color(0xff000000);
-  static const Color neonGreenAccent = Color(0xff1dff90);
+  static const Color neonGreenAccent = AppColors.neon;
   static const Color demoModeBlue = Color(0xff1d90ff);
   static const Color textDescriptionGrey = Color(0xff2c2c2c);
   static const Color serverTimeGrey = Color(0xff505050);
@@ -46,6 +51,39 @@ class DashboardScreen extends StatelessWidget {
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.shopping_cart),
+                title: const Text('Shop'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ShopScreen()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.leaderboard),
+                title: const Text('Leaderboard'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
+                  );
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.computer),
                 title: const Text('Game'),
                 onTap: () {
@@ -56,6 +94,18 @@ class DashboardScreen extends StatelessWidget {
                   );
                 },
               ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                  );
+                },
+              ),
+              const Divider(),
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),
@@ -120,10 +170,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: DashboardScheme.black,
-                    border: Border.all(
-                      color: const Color(0xff1dff90),
-                      width: 2.0,
-                    ),
+                    border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,10 +196,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: DashboardScheme.black,
-                    border: Border.all(
-                      color: const Color(0xff1dff90),
-                      width: 2.0,
-                    ),
+                    border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,10 +222,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: DashboardScheme.black,
-                    border: Border.all(
-                      color: const Color(0xff1dff90),
-                      width: 2.0,
-                    ),
+                    border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,10 +268,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: DashboardScheme.black,
-                    border: Border.all(
-                      color: const Color(0xff1dff90),
-                      width: 2.0,
-                    ),
+                    border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,10 +317,7 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: DashboardScheme.black,
-                    border: Border.all(
-                      color: const Color(0xff1dff90),
-                      width: 2.0,
-                    ),
+                    border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,7 +330,8 @@ class DashboardScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const GameSetup(),
+                              builder: (context) =>
+                                  const GameSetup(mode: 'daily'),
                             ),
                           );
                         },

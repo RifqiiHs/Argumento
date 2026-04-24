@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screen/dashboard.dart';
 import 'package:mobile/screen/game.dart';
 import 'package:mobile/screen/landing.dart';
+import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/providers/userProvider.dart';
 
@@ -16,17 +17,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
       child: MaterialApp(
         title: 'Argumento',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.black,
-          primaryColor: Colors.greenAccent,
+          primaryColor: AppColors.neon,
           colorScheme: const ColorScheme.dark(
-            primary: Colors.greenAccent,
+            primary: AppColors.neon,
             secondary: Colors.white,
           ),
           textTheme: GoogleFonts.firaCodeTextTheme(

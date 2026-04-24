@@ -4,6 +4,7 @@ import 'package:mobile/components/screens/gameState.dart';
 import 'package:mobile/components/screens/manualStateComponent.dart';
 import 'package:mobile/screen/dashboard.dart';
 import 'package:mobile/screen/login.dart';
+import 'package:mobile/theme/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GameScreen extends StatefulWidget {
@@ -81,7 +82,7 @@ class _GameScreenState extends State<GameScreen> {
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
-        selectedItemColor: Colors.greenAccent,
+        selectedItemColor: AppColors.neon,
         unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,
         onTap: (index) {

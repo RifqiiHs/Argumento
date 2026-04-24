@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/button.dart';
 import 'package:mobile/screen/login.dart';
+import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/providers/userProvider.dart';
 import 'dashboard.dart';
@@ -64,12 +65,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Username',
-                  labelStyle: const TextStyle(color: Colors.greenAccent),
+                  labelStyle: const TextStyle(color: AppColors.neon),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[800]!),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.greenAccent),
+                    borderSide: BorderSide(color: AppColors.neon),
                   ),
                 ),
               ),
@@ -81,12 +82,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  labelStyle: const TextStyle(color: Colors.greenAccent),
+                  labelStyle: const TextStyle(color: AppColors.neon),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[800]!),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.greenAccent),
+                    borderSide: BorderSide(color: AppColors.neon),
                   ),
                 ),
               ),
@@ -98,12 +99,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(color: Colors.greenAccent),
+                  labelStyle: const TextStyle(color: AppColors.neon),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[800]!),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.greenAccent),
+                    borderSide: BorderSide(color: AppColors.neon),
                   ),
                 ),
               ),
@@ -114,12 +115,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Confirmation Password',
-                  labelStyle: const TextStyle(color: Colors.greenAccent),
+                  labelStyle: const TextStyle(color: AppColors.neon),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[800]!),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.greenAccent),
+                    borderSide: BorderSide(color: AppColors.neon),
                   ),
                 ),
               ),
@@ -145,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: userProvider.authLoading
                             ? null
                             : _handleRegister,
-                        backgroundColor: Colors.greenAccent,
+                        backgroundColor: AppColors.neon,
                         child: userProvider.authLoading
                             ? const SizedBox(
                                 height: 20,
