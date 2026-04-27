@@ -14,11 +14,11 @@ import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScheme {
-  static const Color black = Color(0xff000000);
+  static const Color black = AppColors.black;
   static const Color neonGreenAccent = AppColors.neon;
-  static const Color demoModeBlue = Color(0xff1d90ff);
-  static const Color textDescriptionGrey = Color(0xff2c2c2c);
-  static const Color serverTimeGrey = Color(0xff505050);
+  static const Color demoModeBlue = AppColors.demoModeBlue;
+  static const Color textDescriptionGrey = AppColors.textDescriptionGrey;
+  static const Color serverTimeGrey = AppColors.serverTimeGrey;
 }
 
 class DashboardScreen extends StatelessWidget {

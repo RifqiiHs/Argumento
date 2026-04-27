@@ -12,10 +12,10 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
   @override
   Widget build(BuildContext context) {
     const neon = AppColors.neon;
-    const deepBlack = Color(0xff03050a);
-    const muted = Color(0xff7a7f88);
-    const textWhite = Color(0xffdfe2e6);
-    const scrollBg = Color(0xff1a1a1a);
+    const deepBlack = AppColors.deepBlack;
+    const muted = AppColors.muted;
+    const textWhite = AppColors.textWhite;
+    const scrollBg = AppColors.scrollBg;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(8),
@@ -49,7 +49,7 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xff0c3525),
+                      color: AppColors.badgeBg,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: neon),
                     ),
@@ -78,7 +78,7 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                     style: TextStyle(color: textWhite, letterSpacing: 1.2),
                   ),
                   const SizedBox(height: 20),
-                  Container(height: 1, color: const Color(0xff2a2a2a)),
+                  Container(height: 1, color: AppColors.panelDivider),
                   const SizedBox(height: 24),
                   // Main body with left accent
                   Row(

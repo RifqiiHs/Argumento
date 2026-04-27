@@ -23,6 +23,7 @@ class _GameSetupState extends State<GameSetup> {
   late TextEditingController _postAmountController;
   late Map<String, List<String>> _selectedTopics;
   bool _isSubmitting = false;
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +32,30 @@ class _GameSetupState extends State<GameSetup> {
       for (final category in contentTypes)
         category['name'] as String: <String>[],
     };
+    _resumeExistingShiftIfAny();
+  }
+
+  Future<void> _resumeExistingShiftIfAny() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storage = prefs.getString('shift_data');
+
+    if (storage == null) {
+      return;
+    }
+
+    try {
+      final parsed = jsonDecode(storage) as Map<String, dynamic>;
+      final currPosts = parsed['currPosts'] as List<dynamic>? ?? [];
+      final logs = parsed['log'] as List<dynamic>? ?? [];
+
+      if (currPosts.isNotEmpty && logs.length < currPosts.length) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const GameScreen()),
+        );
+      }
+    } catch (_) {}
   }
 
   @override
@@ -62,6 +87,24 @@ class _GameSetupState extends State<GameSetup> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
       final user = context.read<UserProvider>().user;
+
+      final existingShift = prefs.getString('shift_data');
+      if (existingShift != null) {
+        try {
+          final parsed = jsonDecode(existingShift) as Map<String, dynamic>;
+          final currPosts = parsed['currPosts'] as List<dynamic>? ?? [];
+          final logs = parsed['log'] as List<dynamic>? ?? [];
+
+          if (currPosts.isNotEmpty && logs.length < currPosts.length) {
+            if (!mounted) return;
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const GameScreen()),
+            );
+            return;
+          }
+        } catch (_) {}
+      }
 
       if (widget.mode == 'daily') {
         final isCompleted =
@@ -103,12 +146,16 @@ class _GameSetupState extends State<GameSetup> {
           (data['posts'] as List<dynamic>? ??
           data['data'] as List<dynamic>? ??
           []);
-      final newGame = {'currPosts': posts, 'log': <dynamic>[]};
+      final newGame = {
+        'currPosts': posts,
+        'log': <dynamic>[],
+        'mode': widget.mode,
+      };
 
       await prefs.setString('shift_data', jsonEncode(newGame));
 
       if (!mounted) return;
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const GameScreen()),
       );
@@ -131,9 +178,9 @@ class _GameSetupState extends State<GameSetup> {
   @override
   Widget build(BuildContext context) {
     const neon = AppColors.neon;
-    const deepBlack = Color(0xff03050a);
-    const muted = Color(0xff7a7f88);
-    const textWhite = Color(0xffdfe2e6);
+    const deepBlack = AppColors.deepBlack;
+    const muted = AppColors.muted;
+    const textWhite = AppColors.textWhite;
     final user = context.watch<UserProvider>().user;
     final isPractice = widget.mode == 'practice';
     final isDaily = widget.mode == 'daily';
@@ -296,7 +343,6 @@ class _GameSetupState extends State<GameSetup> {
                                   style: TextStyle(
                                     color: muted.withOpacity(0.9),
                                     fontSize: 11,
-                                    fontFamily: 'monospace',
                                   ),
                                 ),
                               ),

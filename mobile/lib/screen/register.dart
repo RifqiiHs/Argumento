@@ -19,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmationPasswordController =
       TextEditingController();
+  bool _isRedirecting = false;
 
   void _handleRegister() async {
     final userProvider = context.read<UserProvider>();
@@ -41,6 +42,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+    final user = userProvider.user;
+    if (user != null && !_isRedirecting) {
+      _isRedirecting = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
+      });
+    }
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(

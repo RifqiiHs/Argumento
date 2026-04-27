@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/screens/briefingStateComponent.dart';
+import 'package:mobile/components/screens/gameSetup.dart';
 import 'package:mobile/components/screens/gameState.dart';
 import 'package:mobile/components/screens/manualStateComponent.dart';
 import 'package:mobile/screen/dashboard.dart';
@@ -16,6 +17,9 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   int _currentIndex = 0;
+  String? _shiftData;
+  bool _isLoadingShiftData = true;
+  bool _isRedirecting = false;
 
   final List<Widget> _screens = [
     const GameStateComponent(),
@@ -23,7 +27,33 @@ class _GameScreenState extends State<GameScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadShiftData();
+  }
+
+  Future<void> _loadShiftData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _shiftData = prefs.getString("shift_data");
+      _isLoadingShiftData = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_isLoadingShiftData && _shiftData == null && !_isRedirecting) {
+      _isRedirecting = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const GameSetup()),
+        );
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
