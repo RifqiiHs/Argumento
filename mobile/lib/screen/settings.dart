@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile/components/ui/dashboard_shell.dart';
 import 'package:mobile/providers/userProvider.dart';
-import 'package:mobile/screen/login.dart';
 import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,30 +15,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isThemeDark = true;
-  bool _isNotificationsEnabled = true;
-
   @override
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        title: Text(
-          'Settings',
-          style: GoogleFonts.firaCode(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+    return DashboardShell(
+      title: 'Settings',
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -204,9 +185,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final userProvider = context.read<UserProvider>();
         await userProvider.logOut();
         if (mounted) {
-          Navigator.pushAndRemoveUntil(
+          Navigator.pushNamedAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            '/login',
             (route) => false,
           );
         }
@@ -263,9 +244,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             final userProvider = context.read<UserProvider>();
             await userProvider.logOut();
             if (mounted) {
-              Navigator.pushAndRemoveUntil(
+              Navigator.pushNamedAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                '/login',
                 (route) => false,
               );
             }

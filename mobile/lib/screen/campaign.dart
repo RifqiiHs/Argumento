@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/components/ui/dashboard_shell.dart';
 
 class CampaignScreen extends StatefulWidget {
   const CampaignScreen({super.key});
@@ -10,6 +11,14 @@ class CampaignScreen extends StatefulWidget {
 class _CampaignScreenState extends State<CampaignScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return DashboardShell(
+      title: 'Campaign',
+      body: Center(
+        child: Text(
+          'Campaign screen coming soon',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      ),
+    );
   }
 }

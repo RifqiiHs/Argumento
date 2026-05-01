@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile/components/ui/dashboard_shell.dart';
 import 'package:mobile/providers/userProvider.dart';
 import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
@@ -73,6 +74,7 @@ class _ShopScreenState extends State<ShopScreen> {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
+
         body: jsonEncode({'type': type, 'itemId': item['id']}),
       );
 
@@ -102,6 +104,7 @@ class _ShopScreenState extends State<ShopScreen> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _equipTheme(Map<String, dynamic> item) async {
     setState(() => _isLoading = true);
 
@@ -123,6 +126,8 @@ class _ShopScreenState extends State<ShopScreen> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text('Equipped ${item['name']}')));
+          final userProvider = context.read<UserProvider>();
+          await userProvider.updateUser();
         }
       }
     } catch (e) {
@@ -143,23 +148,8 @@ class _ShopScreenState extends State<ShopScreen> {
     final userProvider = context.watch<UserProvider>();
     final user = userProvider.user;
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        title: Text(
-          'Shop',
-          style: GoogleFonts.spaceGrotesk(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+    return DashboardShell(
+      title: 'Shop',
       body: FutureBuilder<Map<String, dynamic>?>(
         future: _shopFuture,
         builder: (context, snapshot) {
@@ -178,7 +168,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Restricted Area',
-                      style: GoogleFonts.spaceGrotesk(
+                      style: GoogleFonts.firaCode(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -187,7 +177,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Verify your email to access the shop',
-                      style: GoogleFonts.spaceGrotesk(color: Colors.grey[400]),
+                      style: GoogleFonts.firaCode(color: Colors.grey[400]),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -200,7 +190,7 @@ class _ShopScreenState extends State<ShopScreen> {
             return Center(
               child: Text(
                 'Error loading shop',
-                style: GoogleFonts.spaceGrotesk(color: Colors.red),
+                style: GoogleFonts.firaCode(color: Colors.red),
               ),
             );
           }
@@ -212,7 +202,7 @@ class _ShopScreenState extends State<ShopScreen> {
             return Center(
               child: Text(
                 'No items available',
-                style: GoogleFonts.spaceGrotesk(color: Colors.grey[400]),
+                style: GoogleFonts.firaCode(color: Colors.grey[400]),
               ),
             );
           }
@@ -235,14 +225,14 @@ class _ShopScreenState extends State<ShopScreen> {
                     children: [
                       Text(
                         'Available Coins',
-                        style: GoogleFonts.spaceGrotesk(
+                        style: GoogleFonts.firaCode(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey[400],
                         ),
                       ),
                       Text(
                         user.totalCoins.toString(),
-                        style: GoogleFonts.spaceGrotesk(
+                        style: GoogleFonts.firaCode(
                           fontWeight: FontWeight.bold,
                           color: Colors.amber[400],
                           fontSize: 18,
@@ -265,8 +255,31 @@ class _ShopScreenState extends State<ShopScreen> {
                   itemCount: themes.length,
                   itemBuilder: (context, index) {
                     final theme = themes[index] as Map<String, dynamic>;
+                    final themeId = theme['id']?.toString() ?? '';
                     final isAffordable =
                         user.totalCoins >= (theme['price'] as int);
+                    final isOwned = user.inventory.themes.contains(themeId);
+                    final isEquipped = user.activeTheme == themeId;
+
+                    final String ctaLabel;
+                    final Color ctaColor;
+                    final bool isDisabled;
+
+                    if (isEquipped) {
+                      ctaLabel = 'Equipped';
+                      ctaColor = Colors.grey[700]!;
+                      isDisabled = true;
+                    } else if (isOwned) {
+                      ctaLabel = 'Equip';
+                      ctaColor = AppColors.demoModeBlue;
+                      isDisabled = false;
+                    } else {
+                      ctaLabel = 'Buy';
+                      ctaColor = isAffordable
+                          ? AppColors.neon
+                          : Colors.grey[700]!;
+                      isDisabled = !isAffordable;
+                    }
 
                     return Container(
                       decoration: BoxDecoration(
@@ -303,7 +316,7 @@ class _ShopScreenState extends State<ShopScreen> {
                             // Theme Name
                             Text(
                               theme['name'] ?? 'Unknown',
-                              style: GoogleFonts.spaceGrotesk(
+                              style: GoogleFonts.firaCode(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
@@ -311,10 +324,17 @@ class _ShopScreenState extends State<ShopScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
+                            Text(
+                              theme['description'] ?? 'Unknown',
+                              style: GoogleFonts.firaCode(color: Colors.white),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
                             // Price
                             Text(
                               '${theme['price']} coins',
-                              style: GoogleFonts.spaceGrotesk(
+                              style: GoogleFonts.firaCode(
                                 color: isAffordable
                                     ? Colors.amber[400]
                                     : Colors.red,
@@ -328,21 +348,25 @@ class _ShopScreenState extends State<ShopScreen> {
                               width: double.infinity,
                               height: 32,
                               child: ElevatedButton(
-                                onPressed: _isLoading
+                                onPressed: _isLoading || isDisabled
                                     ? null
-                                    : () => _buyItem(theme, 'theme'),
+                                    : () {
+                                        if (isOwned) {
+                                          _equipTheme(theme);
+                                        } else {
+                                          _buyItem(theme, 'themes');
+                                        }
+                                      },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: isAffordable
-                                      ? AppColors.neon
-                                      : Colors.grey[700],
+                                  backgroundColor: ctaColor,
                                   disabledBackgroundColor: Colors.grey[700],
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
                                 child: Text(
-                                  _isLoading ? 'Loading...' : 'Buy',
-                                  style: GoogleFonts.spaceGrotesk(
+                                  _isLoading ? 'Loading...' : ctaLabel,
+                                  style: GoogleFonts.firaCode(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
                                     color: Colors.black,

@@ -2,14 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/components/button.dart';
 import 'package:mobile/components/screens/gameSetup.dart';
-import 'package:mobile/models/User.dart';
+import 'package:mobile/components/ui/dashboard_shell.dart';
 import 'package:mobile/providers/userProvider.dart';
-import 'package:mobile/screen/game.dart';
-import 'package:mobile/screen/leaderboard.dart';
-import 'package:mobile/screen/login.dart';
-import 'package:mobile/screen/profile.dart';
-import 'package:mobile/screen/settings.dart';
-import 'package:mobile/screen/shop.dart';
 import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -28,106 +22,8 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
     final user = userProvider.user;
-    return Scaffold(
-      backgroundColor: DashboardScheme.black,
-      appBar: AppBar(
-        backgroundColor: DashboardScheme.black,
-        elevation: 0,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        ),
-      ),
-      drawer: Drawer(
-        backgroundColor: DashboardScheme.black,
-        child: SafeArea(
-          child: ListView(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.dashboard),
-                title: const Text('Dashboard'),
-                onTap: () => Navigator.pop(context),
-              ),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Profile'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.shopping_cart),
-                title: const Text('Shop'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ShopScreen()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.leaderboard),
-                title: const Text('Leaderboard'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LeaderboardScreen()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.computer),
-                title: const Text('Game'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const GameScreen()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
-                  );
-                },
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Logout'),
-                onTap: () async {
-                  final userProvider = context.read<UserProvider>();
-                  await userProvider.logOut();
-                  if (!context.mounted) {
-                    return;
-                  }
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                    (route) => false,
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+    return DashboardShell(
+      title: 'Dashboard',
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -146,13 +42,13 @@ class DashboardScreen extends StatelessWidget {
 
                     children: [
                       Text(
-                        "Logged in as",
+                        'Logged in as',
                         style: TextStyle(
                           color: DashboardScheme.neonGreenAccent,
                         ),
                       ),
                       Text(
-                        "${user?.username}",
+                        '${user?.username}',
                         style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -175,10 +71,10 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Total EXP"),
+                      const Text('Total EXP'),
                       const SizedBox(height: 8),
                       Text(
-                        "${user?.totalExp}",
+                        '${user?.totalExp}',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -201,10 +97,10 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Total Coins"),
+                      const Text('Total Coins'),
                       const SizedBox(height: 8),
                       Text(
-                        "${user?.totalCoins}",
+                        '${user?.totalCoins}',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -227,7 +123,7 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Streak"),
+                      const Text('Streak'),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -235,11 +131,11 @@ class DashboardScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${user?.currentStreak}",
+                                '${user?.currentStreak}',
                                 style: const TextStyle(fontSize: 28),
                               ),
                               const SizedBox(height: 8),
-                              const Text("Current"),
+                              const Text('Current'),
                             ],
                           ),
                           const SizedBox(width: 16),
@@ -247,11 +143,11 @@ class DashboardScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${user?.bestStreak}",
+                                '${user?.bestStreak}',
                                 style: const TextStyle(fontSize: 28),
                               ),
                               const SizedBox(height: 8),
-                              const Text("Best"),
+                              const Text('Best'),
                             ],
                           ),
                         ],
@@ -273,7 +169,7 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Performance"),
+                      const Text('Performance'),
                       const SizedBox(height: 8),
                       RichText(
                         text: TextSpan(
@@ -285,23 +181,23 @@ class DashboardScreen extends StatelessWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: user != null && user!.postsProcessed > 0
-                                  ? "${((user!.postsCorrect / user!.postsProcessed) * 100).toStringAsFixed(1)}% ["
-                                  : "0.0% [",
+                              text: user != null && user.postsProcessed > 0
+                                  ? '${((user.postsCorrect / user.postsProcessed) * 100).toStringAsFixed(1)}% ['
+                                  : '0.0% [',
                             ),
                             TextSpan(
-                              text: "${user?.postsCorrect}",
+                              text: '${user?.postsCorrect}',
                               style: TextStyle(
                                 color: DashboardScheme.neonGreenAccent,
                               ),
                             ),
-                            TextSpan(text: " / "),
+                            TextSpan(text: ' / '),
                             TextSpan(
                               text:
-                                  "${(user?.postsProcessed ?? 0) - (user?.postsCorrect ?? 0)}",
+                                  '${(user?.postsProcessed ?? 0) - (user?.postsCorrect ?? 0)}',
                               style: TextStyle(color: Colors.red),
                             ),
-                            TextSpan(text: "]"),
+                            TextSpan(text: ']'),
                           ],
                         ),
                       ),
@@ -322,7 +218,7 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Daily Assignment"),
+                      const Text('Daily Assignment'),
                       const SizedBox(height: 8),
                       NeonButton(
                         label: 'Initiate Shift',
@@ -357,7 +253,7 @@ class DashboardScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Demo Mode"),
+                      const Text('Demo Mode'),
                       const SizedBox(height: 8),
                       NeonButton(
                         label: 'Start Demo Mode',

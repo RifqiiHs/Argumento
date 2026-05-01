@@ -109,7 +109,7 @@ class UserProvider extends ChangeNotifier {
           'password': password,
         }),
       );
-
+      print(jsonDecode(response.body));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 

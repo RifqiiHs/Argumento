@@ -140,6 +140,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Already have an account? Login',
+                  style: TextStyle(
+                    color: AppColors.neon,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
               Consumer<UserProvider>(
                 builder: (context, userProvider, child) {
                   return Column(

@@ -17,8 +17,32 @@ export const getShops = async (_req: Request, res: Response) => {
 
 export const buyShopItem = async (req: Request, res: Response) => {
     try {
-        const { type, itemId }: { type: string; itemId: string } = req.body;
+        const { type, itemId }: { type?: string; itemId?: string } = req.body;
         const userId = req.users;
+
+        if (!itemId || typeof itemId !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid itemId",
+            });
+        }
+
+        const normalizedTypeMap: Record<string, keyof typeof shop> = {
+            theme: "themes",
+            themes: "themes",
+        };
+
+        const normalizedType =
+            typeof type === "string"
+                ? normalizedTypeMap[type.toLowerCase()]
+                : undefined;
+
+        if (!normalizedType) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid shop item type",
+            });
+        }
 
         const user = await User.findById(userId);
 
@@ -29,9 +53,7 @@ export const buyShopItem = async (req: Request, res: Response) => {
             });
         }
 
-        const item = shop[type as keyof typeof shop].find(
-            (it) => it.id === itemId,
-        );
+        const item = shop[normalizedType].find((it) => it.id === itemId);
 
         if (!item) {
             return res.status(404).json({
@@ -47,7 +69,7 @@ export const buyShopItem = async (req: Request, res: Response) => {
         }
 
         user.totalCoins -= item.price;
-        if (type === "themes") {
+        if (normalizedType === "themes") {
             user.inventory.themes.push(itemId);
         } else {
             if (
@@ -56,19 +78,21 @@ export const buyShopItem = async (req: Request, res: Response) => {
                 )
             ) {
                 const index = user.inventory[
-                    type as keyof typeof user.inventory
+                    normalizedType as keyof typeof user.inventory
                 ].findIndex(
                     (it) => typeof it === "object" && it.itemId === itemId,
                 );
                 const item =
-                    user.inventory[type as keyof typeof user.inventory][index];
+                    user.inventory[
+                        normalizedType as keyof typeof user.inventory
+                    ][index];
                 if (typeof item === "object") {
                     item.amount++;
                 }
             } else {
                 (
                     user.inventory[
-                        type as keyof typeof user.inventory
+                        normalizedType as keyof typeof user.inventory
                     ] as Array<{ itemId: string; amount: number }>
                 ).push({
                     itemId,
