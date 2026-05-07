@@ -1,390 +1,260 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-class HackerColors {
-  static const Color black = Color(0xff000000);
-  static const Color neonGreenAccent = Color(0xff1dff90);
-  static const Color demoModeBlue = Color(0xff1d90ff);
-  static const Color textDescriptionGrey = Color(0xff2c2c2c);
-  static const Color serverTimeGrey = Color(0xff505050);
-}
-
-void main() {
-  runApp(const HackerDashboardApp());
-}
-
-class HackerDashboardApp extends StatelessWidget {
-  const HackerDashboardApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Terminal Dashboard',
-      theme: ThemeData(
-        scaffoldBackgroundColor: HackerColors.black,
-        textTheme: GoogleFonts.firaCodeTextTheme(
-          ThemeData.dark().textTheme,
-        ).apply(bodyColor: Colors.white, displayColor: Colors.white),
-        primaryColor: HackerColors.neonGreenAccent,
-      ),
-      home: const DashboardScreen(),
-    );
-  }
-}
+import 'package:mobile/components/button.dart';
+import 'package:mobile/components/screens/gameSetup.dart';
+import 'package:mobile/components/ui/dashboard_shell.dart';
+import 'package:mobile/providers/userProvider.dart';
+import 'package:mobile/theme/app_colors.dart';
+import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            _buildHeaderRow(),
-            const SizedBox(height: 30),
-            _buildDashboardCardGrid(),
-            const SizedBox(height: 24),
-            _buildBottomCardsRow(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCommonCard({
-    required Widget header,
-    required Widget content,
-    Color borderColor = HackerColors.neonGreenAccent,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: borderColor, width: 1.0),
-        borderRadius: BorderRadius.circular(4), // Subtle rounding
-      ),
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [header, const SizedBox(height: 18), content],
-      ),
-    );
-  }
-
-  Widget _buildLargeAccentText(
-    String text, [
-    Color color = HackerColors.neonGreenAccent,
-  ]) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 36,
-        fontWeight: FontWeight.w900,
-        color: color,
-        letterSpacing: -1.0,
-      ),
-    );
-  }
-
-  Widget _buildDescriptionText(
-    String text, [
-    Color color = HackerColors.textDescriptionGrey,
-  ]) {
-    return Text(
-      text,
-      style: TextStyle(fontSize: 12, color: color, letterSpacing: 0.5),
-    );
-  }
-
-  Widget _buildHeaderRow() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.shield_outlined,
-                    color: HackerColors.neonGreenAccent,
-                    size: 14,
+    final userProvider = context.watch<UserProvider>();
+    final user = userProvider.user;
+    return DashboardShell(
+      title: 'Dashboard',
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'LOGGED IN AS',
-                    style: TextStyle(
-                      color: HackerColors.neonGreenAccent,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              // Main bold monospace username
-              _buildLargeAccentText('JohnDoe', Colors.white),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'SERVER TIME',
-                    style: TextStyle(
-                      color: HackerColors.neonGreenAccent,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 2),
-              // Right-aligned grey server time
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    '8:47:44 PM',
-                    style: TextStyle(
-                      color: HackerColors.serverTimeGrey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
-  Widget _buildDashboardCardGrid() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildCommonCard(
-                header: _buildCardHeader('TOTAL EXP', Icons.abc),
-                content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLargeAccentText('0'),
-                    _buildDescriptionText('XP Points Accumulated'),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildCommonCard(
-                header: _buildCardHeader(
-                  'TOTAL COINS',
-                  Icons.account_balance_wallet_outlined,
-                ),
-                content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildLargeAccentText('0'),
-                    _buildDescriptionText('Total Coins Accumulated'),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildCommonCard(
-                header: _buildCardHeader(
-                  'STREAK',
-                  Icons.local_fire_department_outlined,
-                ),
-                content: Row(
-                  children: [
-                    _buildComplexValueDesc('0', 'Current'),
-                    const SizedBox(width: 40),
-                    _buildComplexValueDesc('0', 'Record'),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildCommonCard(
-                header: _buildCardHeader(
-                  'PERFORMANCE',
-                  Icons.bar_chart_outlined,
-                ),
-                content: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildLargeAccentText('0.0%'),
-                        Text(
-                          'Accuracy Rating',
-                          style: TextStyle(
-                            color: HackerColors.neonGreenAccent,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    children: [
+                      Text(
+                        'Logged in as',
+                        style: TextStyle(color: AppColors.neon),
+                      ),
+                      Text(
+                        '${user?.username}',
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                    const SizedBox(width: 32),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    border: Border.all(color: AppColors.neon, width: 2.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Total EXP'),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${user?.totalExp}',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    border: Border.all(color: AppColors.neon, width: 2.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Total Coins'),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${user?.totalCoins}',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    border: Border.all(color: AppColors.neon, width: 2.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Streak'),
+                      const SizedBox(height: 8),
+                      Row(
                         children: [
-                          _buildLargeAccentText(
-                            '0/0',
-                            HackerColors.textDescriptionGrey,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${user?.currentStreak}',
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text('Current'),
+                            ],
+                          ),
+                          const SizedBox(width: 16),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${user?.bestStreak}',
+                                style: const TextStyle(fontSize: 28),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text('Best'),
+                            ],
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCardHeader(
-    String label,
-    IconData icon, [
-    Color color = HackerColors.neonGreenAccent,
-  ]) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: color,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Icon(icon, color: color, size: 16),
-      ],
-    );
-  }
-
-  Widget _buildComplexValueDesc(String value, String desc) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildLargeAccentText(value, HackerColors.textDescriptionGrey),
-        _buildDescriptionText(desc),
-      ],
-    );
-  }
-
-  Widget _buildBottomCardsRow() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildCommonCard(
-            header: _buildCardHeader(
-              'DAILY ASSIGNMENT',
-              Icons.play_arrow_outlined,
-            ),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDescriptionText(
-                  'Pending tasks available.',
-                  Colors.grey[400]!,
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
+                const SizedBox(height: 8),
+                Container(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: HackerColors.neonGreenAccent,
-                      foregroundColor: HackerColors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    border: Border.all(color: AppColors.neon, width: 2.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Performance'),
+                      const SizedBox(height: 8),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontFamily: GoogleFonts.firaCode().fontFamily,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: user != null && user.postsProcessed > 0
+                                  ? '${((user.postsCorrect / user.postsProcessed) * 100).toStringAsFixed(1)}% ['
+                                  : '0.0% [',
+                            ),
+                            TextSpan(
+                              text: '${user?.postsCorrect}',
+                              style: TextStyle(color: AppColors.neon),
+                            ),
+                            TextSpan(text: ' / '),
+                            TextSpan(
+                              text:
+                                  '${(user?.postsProcessed ?? 0) - (user?.postsCorrect ?? 0)}',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            TextSpan(text: ']'),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      'INITIATE SHIFT',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    border: Border.all(color: AppColors.neon, width: 2.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Daily Assignment'),
+                      const SizedBox(height: 8),
+                      NeonButton(
+                        label: 'Initiate Shift',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const GameSetup(mode: 'daily'),
+                            ),
+                          );
+                        },
+                        backgroundColor: AppColors.neon,
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    border: Border.all(
+                      color: AppColors.demoModeBlue,
+                      width: 2.0,
                     ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Demo Mode'),
+                      const SizedBox(height: 8),
+                      NeonButton(
+                        label: 'Start Demo Mode',
+                        backgroundColor: AppColors.demoModeBlue,
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildCommonCard(
-            borderColor: HackerColors.demoModeBlue,
-            header: _buildCardHeader(
-              'DEMO MODE',
-              Icons.shield_outlined,
-              HackerColors.demoModeBlue,
-            ),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDescriptionText(
-                  'Train without pressure.',
-                  Colors.grey[400]!,
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: HackerColors.demoModeBlue,
-                      side: const BorderSide(
-                        color: HackerColors.demoModeBlue,
-                        width: 1,
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    child: const Text(
-                      'INITIATE SHIFT',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
