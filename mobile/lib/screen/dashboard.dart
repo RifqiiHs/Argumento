@@ -7,14 +7,6 @@ import 'package:mobile/providers/userProvider.dart';
 import 'package:mobile/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
-class DashboardScheme {
-  static const Color black = AppColors.black;
-  static const Color neonGreenAccent = AppColors.neon;
-  static const Color demoModeBlue = AppColors.demoModeBlue;
-  static const Color textDescriptionGrey = AppColors.textDescriptionGrey;
-  static const Color serverTimeGrey = AppColors.serverTimeGrey;
-}
-
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
@@ -43,9 +35,7 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Logged in as',
-                        style: TextStyle(
-                          color: DashboardScheme.neonGreenAccent,
-                        ),
+                        style: TextStyle(color: AppColors.neon),
                       ),
                       Text(
                         '${user?.username}',
@@ -65,7 +55,7 @@ class DashboardScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: DashboardScheme.black,
+                    color: AppColors.black,
                     border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
@@ -91,7 +81,7 @@ class DashboardScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: DashboardScheme.black,
+                    color: AppColors.black,
                     border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
@@ -117,7 +107,7 @@ class DashboardScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: DashboardScheme.black,
+                    color: AppColors.black,
                     border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
@@ -163,7 +153,7 @@ class DashboardScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: DashboardScheme.black,
+                    color: AppColors.black,
                     border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
@@ -187,9 +177,7 @@ class DashboardScreen extends StatelessWidget {
                             ),
                             TextSpan(
                               text: '${user?.postsCorrect}',
-                              style: TextStyle(
-                                color: DashboardScheme.neonGreenAccent,
-                              ),
+                              style: TextStyle(color: AppColors.neon),
                             ),
                             TextSpan(text: ' / '),
                             TextSpan(
@@ -212,7 +200,7 @@ class DashboardScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: DashboardScheme.black,
+                    color: AppColors.black,
                     border: Border.all(color: AppColors.neon, width: 2.0),
                   ),
                   child: Column(
@@ -231,7 +219,7 @@ class DashboardScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        backgroundColor: DashboardScheme.neonGreenAccent,
+                        backgroundColor: AppColors.neon,
                       ),
                     ],
                   ),
@@ -244,9 +232,9 @@ class DashboardScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: DashboardScheme.black,
+                    color: AppColors.black,
                     border: Border.all(
-                      color: DashboardScheme.demoModeBlue,
+                      color: AppColors.demoModeBlue,
                       width: 2.0,
                     ),
                   ),
@@ -257,7 +245,7 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       NeonButton(
                         label: 'Start Demo Mode',
-                        backgroundColor: DashboardScheme.demoModeBlue,
+                        backgroundColor: AppColors.demoModeBlue,
                       ),
                     ],
                   ),

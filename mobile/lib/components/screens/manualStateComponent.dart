@@ -16,8 +16,6 @@ class _ManualStateComponentState extends State<ManualStateComponent> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       decoration: BoxDecoration(
         color: AppColors.scrollBg,
