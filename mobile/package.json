@@ -1,0 +1,7 @@
+{
+    "name": "mobile",
+    "private": true,
+    "scripts": {
+        "dev": "flutter run"
+    }
+}

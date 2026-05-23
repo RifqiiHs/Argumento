@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:myapp/screen/register.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile/components/button.dart';
+import 'package:mobile/screen/register.dart';
+import 'package:mobile/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/providers/userProvider.dart';
 import 'dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,92 +14,98 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
-  String _errorMessage = '';
+  bool _isRedirecting = false;
 
-  final url = Uri.parse('https://argumento-api.vercel.app/api/auth/login');
-  Future<void> _login() async {
-    _isLoading = true;
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        }),
-      );
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
-      if (response.statusCode == 200)
-      {
-        final data = jsonDecode(response.body);
-        
-        final prefs = await SharedPreferences.getInstance();
+  void _handleLogin() async {
+    final userProvider = context.read<UserProvider>();
+    await userProvider.login(
+      _usernameController.text,
+      _passwordController.text,
+    );
 
-        if (data['token'] != null) {
-          await prefs.setString('token', data['token']);
-        }
-        if (mounted)
-        {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardScreen()));
-        }
-      } else {
-        setState(() {
-          _errorMessage = 'Invalid email or password';
-        });
+    if (!userProvider.authLoading && userProvider.errorMessage.isEmpty) {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
       }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Connection lost. Server down?';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
-    body: Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
+    final userProvider = context.watch<UserProvider>();
+    final user = userProvider.user;
+    if (user != null && !_isRedirecting) {
+      _isRedirecting = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
+      });
+    }
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
                 'Login',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 2),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _usernameController,
+                keyboardType: TextInputType.text,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: const TextStyle(color: Colors.greenAccent),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[800]!)),
-                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                  labelText: 'Username',
+                  labelStyle: const TextStyle(color: AppColors.neon),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[800]!),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.neon),
+                  ),
                 ),
               ),
 
-            const SizedBox(height: 16),
-            TextField(
+              const SizedBox(height: 16),
+              TextField(
                 controller: _passwordController,
                 keyboardType: TextInputType.text,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(color: Colors.greenAccent),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey[800]!)),
-                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                  labelStyle: const TextStyle(color: AppColors.neon),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[800]!),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.neon),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -106,45 +113,68 @@ class _LoginScreenState extends State<LoginScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterScreen(),
+                    ),
                   );
                 },
                 child: const Text(
-                  'Already have an account?',
+                  'Don\'t have an account? Register',
                   style: TextStyle(
-                    color: Colors.greenAccent,
-                    decoration: TextDecoration.underline, 
+                    color: AppColors.neon,
+                    decoration: TextDecoration.underline,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),              
+              ),
               const SizedBox(height: 16),
-              if (_errorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    _errorMessage,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
-                  ),
-                ),
-
-              ElevatedButton(
-                onPressed: _isLoading ? null : _login, 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.greenAccent,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(),
-                ),
-                child: _isLoading 
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
-                    : const Text('Login', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-              )
-          ],
+              Consumer<UserProvider>(
+                builder: (context, userProvider, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (userProvider.errorMessage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Text(
+                            userProvider.errorMessage,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      NeonButton(
+                        onPressed: userProvider.authLoading
+                            ? null
+                            : _handleLogin,
+                        backgroundColor: AppColors.neon,
+                        child: userProvider.authLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.black,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
-      )
-    )
-   );
+      ),
+    );
   }
 }
