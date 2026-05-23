@@ -192,7 +192,7 @@ class _ManualStateComponentState extends State<ManualStateComponent> {
                   .cast<Map<String, dynamic>>();
 
               return Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF0F1720), Color(0xFF0B0F12)],
@@ -202,9 +202,10 @@ class _ManualStateComponentState extends State<ManualStateComponent> {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         color: AppColors.neon.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(6),
@@ -212,26 +213,30 @@ class _ManualStateComponentState extends State<ManualStateComponent> {
                       child: const Icon(
                         Icons.bookmark,
                         color: AppColors.neon,
-                        size: 18,
+                        size: 16,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       item['name'] as String,
                       style: const TextStyle(
                         fontWeight: FontWeight.w900,
                         color: AppColors.textWhite,
+                        fontSize: 13,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       item['description'] as String,
                       style: const TextStyle(
                         color: AppColors.muted,
-                        fontSize: 12,
+                        fontSize: 11,
+                        height: 1.2,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 8),
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,

@@ -431,12 +431,16 @@ class _GameSetupState extends State<GameSetup> {
                       children: [
                         Icon(Icons.warning_outlined, color: neon, size: 20),
                         const SizedBox(width: 8),
-                        const Text(
-                          'AI JUDGE AND POST GENERATION COULD BE WRONG.',
-                          style: TextStyle(
-                            color: neon,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
+                        Flexible(
+                          child: Text(
+                            'AI JUDGE AND POST GENERATION COULD BE WRONG.',
+                            textAlign: TextAlign.center,
+                            softWrap: true,
+                            style: TextStyle(
+                              color: neon,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                         ),
                       ],

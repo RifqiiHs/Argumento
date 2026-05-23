@@ -159,4 +159,10 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> invalidateUser() async {
+    _user = null;
+    notifyListeners();
+    await updateUser();
+  }
 }

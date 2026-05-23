@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/theme/app_colors.dart';
 
-class BriefingStateComponent extends StatefulWidget {
-  const BriefingStateComponent({super.key});
+class CampaignBriefingComponent extends StatefulWidget {
+  final String campaignId;
+  final String levelId;
+  final String badgeText;
+  final String title;
+  final String briefing;
+  final String description;
+
+  const CampaignBriefingComponent({
+    super.key,
+    required this.campaignId,
+    required this.levelId,
+    required this.badgeText,
+    required this.title,
+    required this.briefing,
+    required this.description,
+  });
 
   @override
-  State<BriefingStateComponent> createState() => _BriefingStateComponentState();
+  State<CampaignBriefingComponent> createState() =>
+      _CampaignBriefingComponentState();
 }
 
-class _BriefingStateComponentState extends State<BriefingStateComponent> {
+class _CampaignBriefingComponentState extends State<CampaignBriefingComponent> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -35,10 +51,13 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                     size: 22,
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'MISSION BRIEFING',
-                      style: TextStyle(color: AppColors.neon, letterSpacing: 2),
+                      style: const TextStyle(
+                        color: AppColors.neon,
+                        letterSpacing: 2,
+                      ),
                     ),
                   ),
                   Container(
@@ -51,9 +70,9 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: AppColors.neon),
                     ),
-                    child: const Text(
-                      'C1-L1',
-                      style: TextStyle(
+                    child: Text(
+                      widget.badgeText,
+                      style: const TextStyle(
                         color: AppColors.neon,
                         letterSpacing: 1.2,
                       ),
@@ -74,9 +93,9 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                     style: TextStyle(color: AppColors.neon, letterSpacing: 2.4),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
-                    'ATTACK THE PERSON (AD HOMINEM)',
-                    style: TextStyle(
+                  Text(
+                    widget.title.toUpperCase(),
+                    style: const TextStyle(
                       color: AppColors.textWhite,
                       letterSpacing: 1.2,
                     ),
@@ -92,7 +111,9 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                       const SizedBox(width: 20),
                       Expanded(
                         child: Text(
-                          'attack the person instead—that\'s Ad Hominem. A scientist\'s divorce doesn\'t invalidate their research. A politician\'s parking tickets don\'t disprove their policy. Watch for posts that ignore the actual point and instead target someone\'s character, appearance, or past mistakes. The logic is flawed: personal flaws ≠ wrong ideas.',
+                          widget.briefing.isNotEmpty
+                              ? widget.briefing
+                              : widget.description,
                           style: const TextStyle(
                             color: AppColors.textWhite,
                             fontFamily: 'monospace',
@@ -100,24 +121,13 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Scrollbar indicator
                       Container(
                         width: 8,
                         decoration: BoxDecoration(
                           color: AppColors.muted,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 8,
-                              decoration: BoxDecoration(
-                                color: AppColors.muted.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: const SizedBox.shrink(),
                       ),
                     ],
                   ),
@@ -147,7 +157,7 @@ class _BriefingStateComponentState extends State<BriefingStateComponent> {
                             ),
                             const SizedBox(width: 10),
                             const Text(
-                              'STANDING ORDERS',
+                              'RULES',
                               style: TextStyle(
                                 color: AppColors.neon,
                                 letterSpacing: 1.8,

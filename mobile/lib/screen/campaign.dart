@@ -9,6 +9,7 @@ import 'package:mobile/components/ui/dashboard_shell.dart';
 import 'package:mobile/models/User.dart';
 import 'package:mobile/providers/userProvider.dart';
 import 'package:mobile/theme/app_colors.dart';
+import 'package:mobile/screen/campaign-play.dart';
 
 class CampaignScreen extends StatefulWidget {
   const CampaignScreen({super.key});
@@ -118,13 +119,13 @@ class _CampaignScreenState extends State<CampaignScreen> {
                     );
 
                     final campaignProgress = user?.campaignProgress
-                        ?.where((cp) => cp.campaignId == campaignId)
+                        .where((cp) => cp.campaignId == campaignId)
                         .firstOrNull;
 
                     final requirement = campaign['requirement'] as String?;
 
                     final requiredCampaign = user?.campaignProgress
-                        ?.where((cp) => cp.campaignId == requirement)
+                        .where((cp) => cp.campaignId == requirement)
                         .firstOrNull;
 
                     // Unlocked if no requirement, or if the requirement is completed
@@ -324,12 +325,12 @@ class _CampaignScreenState extends State<CampaignScreen> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        // Navigation placeholder - update this with your actual router (e.g., go_router)
-                        // context.go('/campaign/$campaignId/$levelId');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Navigating to $campaignId / $levelId',
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CampaignPlayScreen(
+                              campaignId: campaignId,
+                              levelId: levelId,
                             ),
                           ),
                         );

@@ -224,32 +224,6 @@ class DashboardScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.black,
-                    border: Border.all(
-                      color: AppColors.demoModeBlue,
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Demo Mode'),
-                      const SizedBox(height: 8),
-                      NeonButton(
-                        label: 'Start Demo Mode',
-                        backgroundColor: AppColors.demoModeBlue,
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
