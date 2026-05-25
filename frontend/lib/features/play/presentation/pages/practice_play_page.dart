@@ -145,7 +145,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     final accentColor = const Color(0xFF3B82F6); // blue for practice mode
 
     if (_isLoadingStorage) {
-      return Scaffold(backgroundColor: AppColors.zinc950, body: LoadingOverlay(accentColor: accentColor));
+      return Scaffold(backgroundColor: AppColors.bg900, body: LoadingOverlay(accentColor: accentColor));
     }
 
     if (!_isSetupDone) {
@@ -164,14 +164,14 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
 
     if (_index >= _posts.length) {
       return Scaffold(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('DEMO COMPLETE', style: TextStyle(fontFamily: 'Courier New', fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF3B82F6), letterSpacing: 2)),
+              const Text('DEMO COMPLETE', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF3B82F6), letterSpacing: 2)),
               const SizedBox(height: 8),
-              const Text('No stats tracked in demo mode.', style: TextStyle(fontFamily: 'Courier New', color: AppColors.zinc500)),
+              const Text('No stats tracked in demo mode.', style: TextStyle(color: AppColors.textMuted)),
               const SizedBox(height: 32),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -184,26 +184,26 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: AppBar(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.zinc400),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
           onPressed: () => context.go('/dashboard'),
         ),
         title: Row(
           children: [
-            const Text('DEMO MODE', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, color: Color(0xFF3B82F6), letterSpacing: 2, fontSize: 16)),
+            const Text('DEMO MODE', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF3B82F6), letterSpacing: 2, fontSize: 16)),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(border: Border.all(color: Colors.blue.withOpacity(0.5)), color: Colors.blue.withOpacity(0.1)),
-              child: const Text('NO STATS', style: TextStyle(fontFamily: 'Courier New', fontSize: 9, color: Colors.blue, letterSpacing: 1)),
+              decoration: BoxDecoration(border: Border.all(color: Colors.blue.withValues(alpha: 0.5)), color: Colors.blue.withValues(alpha: 0.1)),
+              child: const Text('NO STATS', style: TextStyle(fontSize: 9, color: Colors.blue, letterSpacing: 1)),
             ),
           ],
         ),
-        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.zinc800)),
+        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.bg700)),
       ),
       body: GameStateWidget(
         currentPost: _posts[_index],

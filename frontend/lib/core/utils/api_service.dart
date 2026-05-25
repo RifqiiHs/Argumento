@@ -11,23 +11,52 @@ class ApiService {
 
   Dio get _dio => _client.dio;
 
-  // ============ AUTH ============
-  Future<String> login(String username, String password) async {
-    final res = await _dio.post('/auth/login', data: {'username': username, 'password': password});
-    final token = res.data['token'] as String;
-    await _client.saveToken(token);
-    return token;
+  // Helper: extract readable message from Dio errors
+  String _errorMessage(dynamic e) {
+    if (e is DioException) {
+      final data = e.response?.data;
+      if (data is Map && data['message'] != null) {
+        return data['message'].toString();
+      }
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        return 'Connection timed out. Check your network.';
+      }
+      if (e.type == DioExceptionType.connectionError) {
+        return 'Cannot reach server. Is the backend running?';
+      }
+      return 'Network error: ${e.message}';
+    }
+    return e.toString();
   }
 
-  Future<String> register(String username, String password, String email) async {
-    final res = await _dio.post('/auth/register', data: {
-      'username': username,
-      'password': password,
-      'email': email,
-    });
-    final token = res.data['token'] as String;
-    await _client.saveToken(token);
-    return token;
+  // ============ AUTH ============
+  Future<String> login(String username, String password) async {
+    try {
+      final res = await _dio.post('/auth/login',
+          data: {'username': username, 'password': password});
+      final token = res.data['token'] as String;
+      await _client.saveToken(token);
+      return token;
+    } catch (e) {
+      throw Exception(_errorMessage(e));
+    }
+  }
+
+  Future<String> register(
+      String username, String password, String email) async {
+    try {
+      final res = await _dio.post('/auth/register', data: {
+        'username': username,
+        'password': password,
+        'email': email,
+      });
+      final token = res.data['token'] as String;
+      await _client.saveToken(token);
+      return token;
+    } catch (e) {
+      throw Exception(_errorMessage(e));
+    }
   }
 
   Future<UserModel?> getMe() async {
@@ -43,24 +72,44 @@ class ApiService {
   }
 
   Future<void> sendVerifyEmail(String email) async {
-    await _dio.post('/auth/verify', data: {'email': email});
+    try {
+      await _dio.post('/auth/verify', data: {'email': email});
+    } catch (e) {
+      throw Exception(_errorMessage(e));
+    }
   }
 
   Future<void> verifyEmail(String id) async {
-    await _dio.put('/auth/verify/$id');
+    try {
+      await _dio.put('/auth/verify/$id');
+    } catch (e) {
+      throw Exception(_errorMessage(e));
+    }
   }
 
   Future<void> generateResetToken(String email) async {
-    await _dio.post('/auth/reset', data: {'email': email});
+    try {
+      await _dio.post('/auth/reset', data: {'email': email});
+    } catch (e) {
+      throw Exception(_errorMessage(e));
+    }
   }
 
   Future<void> resetPassword(String id, String newPassword) async {
-    await _dio.put('/auth/reset/$id', data: {'newPassword': newPassword});
+    try {
+      await _dio.put('/auth/reset/$id', data: {'newPassword': newPassword});
+    } catch (e) {
+      throw Exception(_errorMessage(e));
+    }
   }
 
   Future<void> deleteAccount() async {
-    await _dio.delete('/auth');
-    await _client.deleteToken();
+    try {
+      await _dio.delete('/auth');
+      await _client.deleteToken();
+    } catch (e) {
+      throw Exception(_errorMessage(e));
+    }
   }
 
   Future<void> logout() async {
@@ -74,7 +123,9 @@ class ApiService {
       'postLength': postLength,
       'types': types,
     });
-    return (res.data['posts'] as List).map((p) => PostModel.fromJson(p)).toList();
+    return (res.data['posts'] as List)
+        .map((p) => PostModel.fromJson(p))
+        .toList();
   }
 
   Future<List<PostModel>> generatePracticeShift(
@@ -83,7 +134,9 @@ class ApiService {
       'postLength': postLength,
       'types': types,
     });
-    return (res.data['posts'] as List).map((p) => PostModel.fromJson(p)).toList();
+    return (res.data['posts'] as List)
+        .map((p) => PostModel.fromJson(p))
+        .toList();
   }
 
   Future<void> completeShift(List<PostLogModel> history) async {
@@ -93,8 +146,8 @@ class ApiService {
   }
 
   // ============ JUDGE ============
-  Future<PostVerdictModel> judge(
-      String headline, String content, List<String> slopReasons, String userReason) async {
+  Future<PostVerdictModel> judge(String headline, String content,
+      List<String> slopReasons, String userReason) async {
     final res = await _dio.post('/judge', data: {
       'headline': headline,
       'content': content,
@@ -161,7 +214,9 @@ class ApiService {
   }
 
   Future<void> refreshStreak() async {
-    await _dio.put('/users/streak');
+    try {
+      await _dio.put('/users/streak');
+    } catch (_) {}
   }
 
   // ============ POSTS ============

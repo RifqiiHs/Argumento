@@ -122,13 +122,13 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
     final accentColor = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
 
     if (_isLoading) {
-      return Scaffold(backgroundColor: AppColors.zinc950, body: LoadingOverlay(accentColor: accentColor));
+      return Scaffold(backgroundColor: AppColors.bg900, body: LoadingOverlay(accentColor: accentColor));
     }
     if (_levelData == null) {
       return Scaffold(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         body: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text('Level not found', style: TextStyle(fontFamily: 'Courier New', color: AppColors.zinc400)),
+          const Text('Level not found', style: TextStyle(color: AppColors.textSecondary)),
           const SizedBox(height: 16),
           AccentButton(label: 'Back', onPressed: () => context.go('/campaign'), accentColor: accentColor),
         ])),
@@ -136,19 +136,19 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: AppBar(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.zinc400),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
           onPressed: () => context.go('/campaign'),
         ),
         title: Text(
           _levelData!.title.toUpperCase(),
-          style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, color: accentColor, letterSpacing: 1),
+          style: TextStyle(fontWeight: FontWeight.bold, color: accentColor, letterSpacing: 1),
         ),
-        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.zinc800)),
+        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.bg700)),
       ),
       body: _phase == _CampaignPhase.briefing
           ? _buildBriefing(accentColor)
@@ -166,38 +166,38 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(border: Border.all(color: accentColor.withOpacity(0.4))),
-            child: const Text('MISSION BRIEFING', style: TextStyle(fontFamily: 'Courier New', fontSize: 10, color: AppColors.zinc500, letterSpacing: 2)),
+            decoration: BoxDecoration(border: Border.all(color: accentColor.withValues(alpha: 0.4))),
+            child: const Text('MISSION BRIEFING', style: TextStyle(fontSize: 10, color: AppColors.textMuted, letterSpacing: 2)),
           ),
           const SizedBox(height: 20),
           Text(
             _levelData!.title.toUpperCase(),
-            style: const TextStyle(fontFamily: 'Courier New', fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5),
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5),
           ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.zinc900.withOpacity(0.4),
+              color: AppColors.bg800.withValues(alpha: 0.4),
               border: Border(left: BorderSide(color: accentColor, width: 4)),
             ),
             child: Text(
               _levelData!.briefing,
-              style: const TextStyle(fontFamily: 'Courier New', fontSize: 14, color: AppColors.zinc300, height: 1.6),
+              style: const TextStyle(fontSize: 14, color: AppColors.textPrimary, height: 1.6),
             ),
           ),
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), border: Border.all(color: AppColors.zinc800)),
+            decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.5), border: Border.all(color: AppColors.bg700)),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: AppColors.zinc500, size: 16),
+                const Icon(Icons.info_outline, color: AppColors.textMuted, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     '${_levelData!.posts.length} documents to review. Identify safe vs slop content.',
-                    style: const TextStyle(fontFamily: 'Courier New', fontSize: 12, color: AppColors.zinc400),
+                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                   ),
                 ),
               ],
@@ -233,10 +233,10 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('POST ${_index + 1} / ${_levelData!.posts.length}',
-                  style: const TextStyle(fontFamily: 'Courier New', fontSize: 11, color: AppColors.zinc500, letterSpacing: 1)),
+                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted, letterSpacing: 1)),
               LinearProgressIndicator(
                 value: (_index + 1) / _levelData!.posts.length,
-                backgroundColor: AppColors.zinc800,
+                backgroundColor: AppColors.bg700,
                 valueColor: AlwaysStoppedAnimation<Color>(accentColor),
                 minHeight: 3,
               ).maybeExpand(),
@@ -247,19 +247,19 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
           // Post card
           Container(
             width: double.infinity,
-            decoration: BoxDecoration(border: Border.all(color: accentColor, width: 2), color: AppColors.zinc950),
+            decoration: BoxDecoration(border: Border.all(color: accentColor, width: 2), color: AppColors.bg900),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.1),
+                    color: accentColor.withValues(alpha: 0.1),
                     border: Border(bottom: BorderSide(color: accentColor, width: 2)),
                   ),
                   child: Text(
                     'DOCUMENT #${_index + 1}',
-                    style: TextStyle(fontFamily: 'Courier New', fontSize: 13, fontWeight: FontWeight.bold, color: accentColor, letterSpacing: 1),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: accentColor, letterSpacing: 1),
                   ),
                 ),
                 Padding(
@@ -273,13 +273,13 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('HEADLINE', style: TextStyle(fontFamily: 'Courier New', fontSize: 9, color: accentColor, letterSpacing: 3, fontWeight: FontWeight.bold)),
+                            Text('HEADLINE', style: TextStyle(fontSize: 9, color: accentColor, letterSpacing: 3, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 6),
-                            Text(post.headline, style: const TextStyle(fontFamily: 'Courier New', fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, height: 1.2)),
+                            Text(post.headline, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, height: 1.2)),
                             const SizedBox(height: 12),
-                            const Text('CONTENT', style: TextStyle(fontFamily: 'Courier New', fontSize: 9, color: AppColors.zinc500, letterSpacing: 3, fontWeight: FontWeight.bold)),
+                            const Text('CONTENT', style: TextStyle(fontSize: 9, color: AppColors.textMuted, letterSpacing: 3, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 6),
-                            Text(post.content, style: const TextStyle(fontFamily: 'Courier New', fontSize: 14, color: AppColors.zinc300, height: 1.6)),
+                            Text(post.content, style: const TextStyle(fontSize: 14, color: AppColors.textPrimary, height: 1.6)),
                           ],
                         ),
                       ),
@@ -303,8 +303,8 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isCorrect ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-        border: Border.all(color: isCorrect ? Colors.green.withOpacity(0.5) : Colors.red.withOpacity(0.5), width: 2),
+        color: isCorrect ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+        border: Border.all(color: isCorrect ? Colors.green.withValues(alpha: 0.5) : Colors.red.withValues(alpha: 0.5), width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,12 +315,12 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
               const SizedBox(width: 8),
               Text(
                 isCorrect ? 'CORRECT ASSESSMENT' : 'ASSESSMENT FAILED',
-                style: TextStyle(fontFamily: 'Courier New', fontSize: 14, fontWeight: FontWeight.w900, color: isCorrect ? Colors.green : Colors.red, letterSpacing: 1),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: isCorrect ? Colors.green : Colors.red, letterSpacing: 1),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          Text(_verdict?.message ?? '', style: const TextStyle(fontFamily: 'Courier New', fontSize: 12, color: AppColors.zinc300, height: 1.4)),
+          Text(_verdict?.message ?? '', style: const TextStyle(fontSize: 12, color: AppColors.textPrimary, height: 1.4)),
           const SizedBox(height: 14),
           AccentButton(label: 'Next →', onPressed: _handleNext, accentColor: accentColor),
         ],
@@ -333,8 +333,8 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
       return Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.08),
-          border: Border.all(color: Colors.red.withOpacity(0.4), width: 2),
+          color: Colors.red.withValues(alpha: 0.08),
+          border: Border.all(color: Colors.red.withValues(alpha: 0.4), width: 2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,10 +342,10 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('VIOLATION REPORT', style: TextStyle(fontFamily: 'Courier New', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.red, letterSpacing: 1.5)),
+                const Text('VIOLATION REPORT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.red, letterSpacing: 1.5)),
                 GestureDetector(
                   onTap: () => setState(() => _isRejecting = false),
-                  child: const Text('[Cancel]', style: TextStyle(fontFamily: 'Courier New', fontSize: 11, color: AppColors.zinc500)),
+                  child: const Text('[Cancel]', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
                 ),
               ],
             ),
@@ -353,13 +353,13 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
             TextField(
               controller: _reasonCtrl,
               maxLines: 3,
-              style: const TextStyle(fontFamily: 'Courier New', color: Colors.red, fontSize: 13),
+              style: const TextStyle(color: Colors.red, fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Describe the violation...',
-                hintStyle: const TextStyle(color: Color(0xFF7F1D1D), fontFamily: 'Courier New', fontSize: 12),
+                hintStyle: const TextStyle(color: Color(0xFF7F1D1D), fontSize: 12),
                 filled: true,
-                fillColor: Colors.black.withOpacity(0.5),
-                border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.red.withOpacity(0.5))),
+                fillColor: Colors.black.withValues(alpha: 0.5),
+                border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.5))),
                 focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.red, width: 2)),
                 contentPadding: const EdgeInsets.all(12),
               ),
@@ -376,11 +376,11 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
                   foregroundColor: Colors.black,
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  disabledBackgroundColor: Colors.red.withOpacity(0.4),
+                  disabledBackgroundColor: Colors.red.withValues(alpha: 0.4),
                 ),
                 child: _isAnalyzing
                     ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
-                    : const Text('SUBMIT REPORT', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                    : const Text('SUBMIT REPORT', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5)),
               ),
             ),
           ],
@@ -394,13 +394,13 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
           child: ElevatedButton(
             onPressed: _isAnalyzing ? null : _handleApprove,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.withOpacity(0.1),
+              backgroundColor: Colors.green.withValues(alpha: 0.1),
               foregroundColor: Colors.green,
               side: const BorderSide(color: Colors.green, width: 2),
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('APPROVE', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+            child: const Text('APPROVE', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5)),
           ),
         ),
         const SizedBox(width: 10),
@@ -408,13 +408,13 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
           child: ElevatedButton(
             onPressed: _isAnalyzing ? null : () => setState(() => _isRejecting = true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.withOpacity(0.1),
+              backgroundColor: Colors.red.withValues(alpha: 0.1),
               foregroundColor: Colors.red,
               side: const BorderSide(color: Colors.red, width: 2),
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('REJECT', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+            child: const Text('REJECT', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.5)),
           ),
         ),
       ],
@@ -431,11 +431,11 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('MISSION COMPLETE', style: TextStyle(fontFamily: 'Courier New', fontSize: 26, fontWeight: FontWeight.w900, color: accentColor, letterSpacing: 1), textAlign: TextAlign.center),
+            Text('MISSION COMPLETE', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: accentColor, letterSpacing: 1), textAlign: TextAlign.center),
             const SizedBox(height: 8),
             Text(
               '$correct / $total Correct',
-              style: const TextStyle(fontFamily: 'Courier New', fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),

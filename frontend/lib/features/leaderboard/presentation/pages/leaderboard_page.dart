@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/api_service.dart';
 import '../../../../core/utils/app_state.dart';
@@ -9,15 +11,14 @@ import '../../../../core/utils/widgets.dart';
 import '../../../shared/bottom_nav.dart';
 
 const _tabs = [
-  {'key': 'totalExp', 'label': 'EXP'},
-  {'key': 'bestStreak', 'label': 'STREAK'},
-  {'key': 'postsProcessed', 'label': 'POSTS'},
-  {'key': 'postsCorrect', 'label': 'CORRECT'},
+  {'key': 'totalExp', 'label': 'EXP', 'icon': Icons.bolt_rounded},
+  {'key': 'bestStreak', 'label': 'Streak', 'icon': Icons.local_fire_department_rounded},
+  {'key': 'postsProcessed', 'label': 'Posts', 'icon': Icons.article_rounded},
+  {'key': 'postsCorrect', 'label': 'Correct', 'icon': Icons.gps_fixed_rounded},
 ];
 
 class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({super.key});
-
   @override
   State<LeaderboardPage> createState() => _LeaderboardPageState();
 }
@@ -28,68 +29,52 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   bool _isLoading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  void initState() { super.initState(); _load(); }
 
   Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
       final data = await ApiService().getLeaderboard(_activeTab);
       setState(() { _entries = data; _isLoading = false; });
-    } catch (_) {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  void _switchTab(String tab) {
-    setState(() => _activeTab = tab);
-    _load();
+    } catch (_) { setState(() => _isLoading = false); }
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserCubit>().state.user;
-    final accentColor = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
-    final myRank = user != null
-        ? _entries.indexWhere((e) => e.id == user.id)
-        : -1;
+    final accent = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
+    final myRank = user != null ? _entries.indexWhere((e) => e.id == user.id) : -1;
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: ArgumentoAppBar(title: 'Leaderboard'),
       bottomNavigationBar: const AppBottomNav(currentIndex: 3),
       body: Column(
         children: [
           // Tab selector
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.zinc800))),
+            padding: const EdgeInsets.all(12),
+            color: AppColors.bg800,
             child: Row(
               children: _tabs.map((t) {
                 final isActive = t['key'] == _activeTab;
                 return Expanded(
                   child: GestureDetector(
-                    onTap: () => _switchTab(t['key']!),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    onTap: () { setState(() => _activeTab = t['key'] as String); _load(); },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
                       margin: const EdgeInsets.only(right: 6),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: isActive ? accentColor : AppColors.zinc900,
-                        border: Border.all(color: isActive ? accentColor : AppColors.zinc700),
+                        color: isActive ? accent.withValues(alpha: 0.12) : AppColors.bg700,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: isActive ? accent.withValues(alpha: 0.4) : AppColors.border),
                       ),
-                      child: Text(
-                        t['label']!,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Courier New',
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: isActive ? Colors.black : AppColors.zinc400,
-                          letterSpacing: 1,
-                        ),
-                      ),
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Icon(t['icon'] as IconData, size: 16, color: isActive ? accent : AppColors.textMuted),
+                        const SizedBox(height: 3),
+                        Text(t['label'] as String, style: GoogleFonts.inter(fontSize: 10, fontWeight: isActive ? FontWeight.w700 : FontWeight.w400, color: isActive ? accent : AppColors.textMuted)),
+                      ]),
                     ),
                   ),
                 );
@@ -101,21 +86,19 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           if (myRank >= 0)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.08),
-                border: Border(bottom: BorderSide(color: accentColor.withOpacity(0.4))),
-              ),
+              decoration: BoxDecoration(color: accent.withValues(alpha: 0.06), border: Border(bottom: BorderSide(color: accent.withValues(alpha: 0.2)))),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'YOUR RANK: #${myRank + 1}',
-                    style: TextStyle(fontFamily: 'Courier New', fontSize: 12, fontWeight: FontWeight.bold, color: accentColor, letterSpacing: 1),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: accent.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
+                    child: Text('You', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: accent)),
                   ),
-                  Text(
-                    '${_entries[myRank].getValueByField(_activeTab)} ${_activeTab == 'totalExp' ? 'XP' : ''}',
-                    style: TextStyle(fontFamily: 'Courier New', fontSize: 12, color: accentColor),
-                  ),
+                  const SizedBox(width: 10),
+                  Text('Rank #${myRank + 1}', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                  const Spacer(),
+                  Text('${_entries[myRank].getValueByField(_activeTab)} ${_activeTab == 'totalExp' ? 'XP' : ''}',
+                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: accent)),
                 ],
               ),
             ),
@@ -123,78 +106,56 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           // List
           Expanded(
             child: _isLoading
-                ? LoadingOverlay(accentColor: accentColor)
+                ? LoadingOverlay(accentColor: accent)
                 : _entries.isEmpty
-                    ? const EmptyState(title: 'No data yet', subtitle: 'Be the first on the leaderboard!')
+                    ? EmptyState(title: 'No data yet', subtitle: 'Be the first on the leaderboard!', icon: const Icon(Icons.emoji_events_rounded, size: 40, color: AppColors.textMuted))
                     : ListView.builder(
                         itemCount: _entries.length,
                         itemBuilder: (ctx, i) {
                           final entry = _entries[i];
                           final isMe = entry.id == user?.id;
-                          final isTop3 = i < 3;
-
                           return GestureDetector(
                             onTap: () => context.go('/profile/${entry.id}'),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               decoration: BoxDecoration(
-                                color: isMe ? accentColor.withOpacity(0.05) : Colors.transparent,
+                                color: isMe ? accent.withValues(alpha: 0.04) : Colors.transparent,
                                 border: Border(
-                                  bottom: BorderSide(color: AppColors.zinc900),
-                                  left: isMe ? BorderSide(color: accentColor, width: 3) : BorderSide.none,
+                                  bottom: const BorderSide(color: AppColors.border),
+                                  left: isMe ? BorderSide(color: accent, width: 3) : BorderSide.none,
                                 ),
                               ),
                               child: Row(
                                 children: [
-                                  // Rank
+                                  // Rank badge
                                   SizedBox(
                                     width: 36,
-                                    child: Text(
-                                      isTop3 ? ['🥇', '🥈', '🥉'][i] : '#${i + 1}',
-                                      style: TextStyle(
-                                        fontFamily: 'Courier New',
-                                        fontSize: isTop3 ? 20 : 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.zinc500,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                    child: i < 3
+                                        ? Text(['🥇', '🥈', '🥉'][i], style: const TextStyle(fontSize: 20), textAlign: TextAlign.center)
+                                        : Text('#${i + 1}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textMuted), textAlign: TextAlign.center),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  // Avatar
+                                  Container(
+                                    width: 38, height: 38,
+                                    decoration: BoxDecoration(
+                                      color: isMe ? accent.withValues(alpha: 0.15) : AppColors.bg700,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Text(entry.username.substring(0, 1).toUpperCase(),
+                                          style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: isMe ? accent : AppColors.textSecondary)),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  // Username
-                                  Expanded(
-                                    child: Text(
-                                      entry.username,
-                                      style: TextStyle(
-                                        fontFamily: 'Courier New',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: isMe ? accentColor : Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  // Value
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        '${entry.getValueByField(_activeTab)}',
-                                        style: TextStyle(
-                                          fontFamily: 'Courier New',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w900,
-                                          color: isMe ? accentColor : Colors.white,
-                                        ),
-                                      ),
-                                      Text(
-                                        _activeTab.toUpperCase().replaceAll('_', ' '),
-                                        style: const TextStyle(fontFamily: 'Courier New', fontSize: 9, color: AppColors.zinc500, letterSpacing: 1),
-                                      ),
-                                    ],
-                                  ),
+                                  Expanded(child: Text(entry.username, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: isMe ? accent : AppColors.textPrimary))),
+                                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                                    Text('${entry.getValueByField(_activeTab)}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: isMe ? accent : AppColors.textPrimary)),
+                                    Text((_activeTab).replaceAll('_', ' '), style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted)),
+                                  ]),
                                 ],
                               ),
-                            ),
+                            ).animate().fadeIn(delay: Duration(milliseconds: i < 10 ? i * 30 : 0)),
                           );
                         },
                       ),

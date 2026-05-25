@@ -1,149 +1,128 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/api_service.dart';
 import '../../../../core/utils/app_state.dart';
 import '../../../../core/utils/models.dart';
 import '../../../../core/utils/widgets.dart';
 
-// ============ HISTORY LIST PAGE ============
+// ── History List ────────────────────────────────────────────
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserCubit>().state.user;
-    final accentColor = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
+    final accent = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
     final history = user?.postsHistory.reversed.toList() ?? [];
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: AppBar(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: AppColors.zinc400), onPressed: () => context.go('/dashboard')),
-        title: const Text('POST LOG', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1)),
-        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.zinc800)),
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: AppColors.bg700, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, size: 14, color: AppColors.textSecondary)),
+          onPressed: () => context.go('/dashboard'),
+        ),
+        title: Text('Post History', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.border)),
       ),
       body: history.isEmpty
           ? EmptyState(
-              title: 'No History Yet',
-              subtitle: 'Complete a daily shift to see your log.',
-              icon: Icon(Icons.history, color: AppColors.zinc600, size: 48),
+              title: 'No history yet',
+              subtitle: 'Complete a daily shift to see your post log here.',
+              icon: const Icon(Icons.history_rounded, size: 40, color: AppColors.textMuted),
             )
-          : ListView.builder(
-              itemCount: history.length,
-              itemBuilder: (ctx, i) {
-                final item = history[i];
-                final post = item.post;
-                return GestureDetector(
-                  onTap: () => context.go('/history/${item.postId}'),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: const BorderSide(color: AppColors.zinc900),
-                        left: BorderSide(
-                          color: item.isCorrect ? accentColor : Colors.red,
-                          width: 4,
-                        ),
-                      ),
+          : Column(
+              children: [
+                // Summary bar
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  color: AppColors.bg800,
+                  child: Row(children: [
+                    Text('${history.length} posts reviewed', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                    const Spacer(),
+                    StatusBadge(
+                      label: '${history.where((h) => h.isCorrect).length} correct',
+                      color: accent,
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  ]),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: history.length,
+                    itemBuilder: (ctx, i) {
+                      final item = history[i];
+                      final post = item.post;
+                      return GestureDetector(
+                        onTap: () => context.go('/history/${item.postId}'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: const BorderSide(color: AppColors.border),
+                              left: BorderSide(color: item.isCorrect ? accent : AppColors.error, width: 3),
+                            ),
+                          ),
+                          child: Row(
                             children: [
-                              if (post != null) ...[
-                                Text(
-                                  post.headline,
-                                  style: const TextStyle(fontFamily: 'Courier New', fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  post.content,
-                                  style: const TextStyle(fontFamily: 'Courier New', fontSize: 11, color: AppColors.zinc500),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      color: post.type == 'slop'
-                                          ? Colors.red.withOpacity(0.15)
-                                          : AppColors.green500.withOpacity(0.15),
-                                      child: Text(
-                                        post.type.toUpperCase(),
-                                        style: TextStyle(
-                                          fontFamily: 'Courier New',
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.bold,
-                                          color: post.type == 'slop' ? Colors.red : AppColors.green500,
-                                          letterSpacing: 1,
+                                    if (post != null) ...[
+                                      Text(post.headline, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      const SizedBox(height: 4),
+                                      Text(post.content, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                      const SizedBox(height: 6),
+                                      Row(children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: post.type == 'slop' ? AppColors.errorBg : AppColors.successBg,
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(post.type.toUpperCase(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: post.type == 'slop' ? AppColors.error : AppColors.success)),
                                         ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    if (post.category != null)
-                                      Text(
-                                        post.category!.replaceAll('_', ' ').toUpperCase(),
-                                        style: const TextStyle(fontFamily: 'Courier New', fontSize: 9, color: AppColors.zinc600, letterSpacing: 1),
-                                      ),
+                                        if (post.category != null) ...[
+                                          const SizedBox(width: 6),
+                                          Text(post.category!.replaceAll('_', ' '), style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+                                        ],
+                                      ]),
+                                    ] else
+                                      Text('Post ID: ${item.postId.substring(0, 8)}...', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
                                   ],
                                 ),
-                              ] else ...[
-                                Text(
-                                  'Post ID: ${item.postId.substring(0, item.postId.length > 8 ? 8 : item.postId.length)}...',
-                                  style: const TextStyle(fontFamily: 'Courier New', fontSize: 12, color: AppColors.zinc500),
-                                ),
-                              ],
+                              ),
+                              const SizedBox(width: 12),
+                              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                Icon(item.isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded, color: item.isCorrect ? accent : AppColors.error, size: 22),
+                                const SizedBox(height: 2),
+                                Text(item.isCorrect ? 'Right' : 'Wrong', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: item.isCorrect ? accent : AppColors.error)),
+                              ]),
                             ],
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Icon(
-                              item.isCorrect ? Icons.shield : Icons.gpp_bad,
-                              color: item.isCorrect ? accentColor : Colors.red,
-                              size: 22,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              item.isCorrect ? 'CORRECT' : 'WRONG',
-                              style: TextStyle(
-                                fontFamily: 'Courier New',
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: item.isCorrect ? accentColor : Colors.red,
-                                letterSpacing: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                        ).animate().fadeIn(delay: Duration(milliseconds: i < 15 ? i * 20 : 0)),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+              ],
             ),
     );
   }
 }
 
-// ============ HISTORY DETAIL PAGE ============
+// ── History Detail ───────────────────────────────────────────
 class HistoryDetailPage extends StatefulWidget {
   final String postId;
   const HistoryDetailPage({super.key, required this.postId});
-
   @override
   State<HistoryDetailPage> createState() => _HistoryDetailPageState();
 }
@@ -153,40 +132,39 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
   bool _isLoading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  void initState() { super.initState(); _load(); }
 
   Future<void> _load() async {
     try {
       final post = await ApiService().getPost(widget.postId);
       setState(() { _post = post; _isLoading = false; });
-    } catch (_) {
-      setState(() => _isLoading = false);
-    }
+    } catch (_) { setState(() => _isLoading = false); }
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserCubit>().state.user;
-    final accentColor = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
+    final accent = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
     final historyItem = user?.postsHistory.firstWhere(
       (h) => h.postId == widget.postId,
       orElse: () => PostHistoryModel(postId: widget.postId, isCorrect: false),
     );
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: AppBar(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: AppColors.zinc400), onPressed: () => context.go('/history')),
-        title: const Text('POST DETAIL', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1)),
-        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.zinc800)),
+        leading: IconButton(
+          icon: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: AppColors.bg700, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, size: 14, color: AppColors.textSecondary)),
+          onPressed: () => context.go('/history'),
+        ),
+        title: Text('Post Detail', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.border)),
       ),
       body: _isLoading
-          ? LoadingOverlay(accentColor: accentColor)
+          ? LoadingOverlay(accentColor: accent)
           : _post == null
               ? const EmptyState(title: 'Post not found')
               : SingleChildScrollView(
@@ -194,137 +172,98 @@ class _HistoryDetailPageState extends State<HistoryDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Result banner
-                      if (historyItem != null)
+                      // Your result banner
+                      if (historyItem != null) ...[
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: (historyItem.isCorrect ? AppColors.green500 : Colors.red).withOpacity(0.1),
-                            border: Border.all(color: historyItem.isCorrect ? AppColors.green500 : Colors.red, width: 2),
+                            color: historyItem.isCorrect ? AppColors.successBg : AppColors.errorBg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: (historyItem.isCorrect ? AppColors.success : AppColors.error).withValues(alpha: 0.3)),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(historyItem.isCorrect ? Icons.shield : Icons.gpp_bad, color: historyItem.isCorrect ? AppColors.green500 : Colors.red, size: 24),
-                              const SizedBox(width: 12),
-                              Text(
-                                historyItem.isCorrect ? 'YOUR ASSESSMENT: CORRECT' : 'YOUR ASSESSMENT: INCORRECT',
-                                style: TextStyle(fontFamily: 'Courier New', fontSize: 14, fontWeight: FontWeight.bold, color: historyItem.isCorrect ? AppColors.green500 : Colors.red, letterSpacing: 1),
-                              ),
-                            ],
-                          ),
-                        ),
+                          child: Row(children: [
+                            Icon(historyItem.isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                                color: historyItem.isCorrect ? AppColors.success : AppColors.error, size: 22),
+                            const SizedBox(width: 10),
+                            Text(historyItem.isCorrect ? 'Your Assessment Was Correct' : 'Your Assessment Was Incorrect',
+                                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: historyItem.isCorrect ? AppColors.success : AppColors.error)),
+                          ]),
+                        ).animate().fadeIn(),
+                        const SizedBox(height: 14),
+                      ],
 
-                      // Post content
+                      // Post content card
                       Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: accentColor, width: 2),
-                        ),
+                        decoration: BoxDecoration(color: AppColors.bg800, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.only(left: 12),
-                              decoration: BoxDecoration(border: Border(left: BorderSide(color: accentColor, width: 4))),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('HEADLINE', style: TextStyle(fontFamily: 'Courier New', fontSize: 9, color: accentColor, letterSpacing: 3, fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 6),
-                                  Text(_post!.headline, style: const TextStyle(fontFamily: 'Courier New', fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white, height: 1.2)),
-                                  const SizedBox(height: 14),
-                                  const Text('CONTENT', style: TextStyle(fontFamily: 'Courier New', fontSize: 9, color: AppColors.zinc500, letterSpacing: 3, fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 6),
-                                  Text(_post!.content, style: const TextStyle(fontFamily: 'Courier New', fontSize: 14, color: AppColors.zinc300, height: 1.6)),
-                                ],
-                              ),
+                            // Header
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(children: [
+                                Container(width: 36, height: 36, decoration: BoxDecoration(color: AppColors.bg600, borderRadius: BorderRadius.circular(10)),
+                                    child: const Icon(Icons.person_rounded, size: 18, color: AppColors.textMuted)),
+                                const SizedBox(width: 10),
+                                Expanded(child: Text(_post!.headline, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary))),
+                              ]),
+                            ),
+                            Container(height: 1, color: AppColors.border),
+                            // Content
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(_post!.content, style: GoogleFonts.inter(fontSize: 15, color: AppColors.textSecondary, height: 1.65)),
                             ),
                           ],
                         ),
-                      ),
+                      ).animate().fadeIn(delay: 100.ms),
+                      const SizedBox(height: 14),
 
-                      const SizedBox(height: 16),
-
-                      // Verdict section - show real answer
+                      // Verdict card
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: _post!.type == 'slop' ? Colors.red.withOpacity(0.08) : AppColors.green500.withOpacity(0.08),
-                          border: Border.all(color: _post!.type == 'slop' ? Colors.red : AppColors.green500, width: 2),
+                          color: _post!.type == 'slop' ? AppColors.errorBg : AppColors.successBg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: (_post!.type == 'slop' ? AppColors.error : AppColors.success).withValues(alpha: 0.3)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Icon(_post!.type == 'slop' ? Icons.warning_amber : Icons.verified_user, color: _post!.type == 'slop' ? Colors.red : AppColors.green500, size: 20),
-                                const SizedBox(width: 8),
-                                Text(
-                                  _post!.type == 'slop' ? 'VERDICT: SLOP DETECTED' : 'VERDICT: SAFE CONTENT',
-                                  style: TextStyle(fontFamily: 'Courier New', fontSize: 14, fontWeight: FontWeight.w900, color: _post!.type == 'slop' ? Colors.red : AppColors.green500, letterSpacing: 1),
-                                ),
-                              ],
-                            ),
+                            Row(children: [
+                              Icon(_post!.type == 'slop' ? Icons.warning_amber_rounded : Icons.verified_rounded,
+                                  color: _post!.type == 'slop' ? AppColors.error : AppColors.success, size: 20),
+                              const SizedBox(width: 8),
+                              Text(_post!.type == 'slop' ? 'Slop Detected' : 'Safe Content',
+                                  style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: _post!.type == 'slop' ? AppColors.error : AppColors.success)),
+                            ]),
                             if (_post!.reasons.isNotEmpty) ...[
                               const SizedBox(height: 12),
-                              const Text('VIOLATIONS:', style: TextStyle(fontFamily: 'Courier New', fontSize: 10, color: AppColors.zinc500, letterSpacing: 2, fontWeight: FontWeight.bold)),
+                              Text('Violations:', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted, fontWeight: FontWeight.w600)),
                               const SizedBox(height: 6),
                               ..._post!.reasons.map((r) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 4),
-                                    child: Row(
-                                      children: [
-                                        const Icon(Icons.circle, color: Colors.red, size: 6),
-                                        const SizedBox(width: 8),
-                                        Text(r.toUpperCase().replaceAll('_', ' '), style: const TextStyle(fontFamily: 'Courier New', fontSize: 12, color: Colors.red)),
-                                      ],
-                                    ),
-                                  )),
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Row(children: [
+                                  Container(width: 6, height: 6, margin: const EdgeInsets.only(right: 8, top: 1), decoration: BoxDecoration(color: AppColors.error, shape: BoxShape.circle)),
+                                  Text(r.replaceAll('_', ' '), style: GoogleFonts.inter(fontSize: 13, color: AppColors.error, fontWeight: FontWeight.w500)),
+                                ]),
+                              )),
                             ],
                           ],
                         ),
-                      ),
-
-                      const SizedBox(height: 16),
+                      ).animate().fadeIn(delay: 200.ms),
+                      const SizedBox(height: 14),
 
                       // Metadata
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(border: Border.all(color: AppColors.zinc800)),
-                        child: Column(
-                          children: [
-                            _MetaRow(label: 'Type', value: _post!.type.toUpperCase()),
-                            _MetaRow(label: 'Category', value: (_post!.category ?? '-').toUpperCase().replaceAll('_', ' ')),
-                            _MetaRow(label: 'Origin', value: _post!.origin.toUpperCase()),
-                            _MetaRow(label: 'Post ID', value: _post!.id.substring(0, 8).toUpperCase()),
-                          ],
-                        ),
-                      ),
+                      InfoCard(children: [
+                        InfoRow(label: 'Type', value: _post!.type.toUpperCase()),
+                        InfoRow(label: 'Category', value: (_post!.category ?? '-').replaceAll('_', ' ').toUpperCase()),
+                        InfoRow(label: 'Origin', value: _post!.origin.toUpperCase()),
+                        InfoRow(label: 'Post ID', value: _post!.id.substring(0, 8).toUpperCase(), isLast: true),
+                      ]).animate().fadeIn(delay: 250.ms),
                     ],
                   ),
                 ),
-    );
-  }
-}
-
-class _MetaRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _MetaRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label.toUpperCase(), style: const TextStyle(fontFamily: 'Courier New', fontSize: 10, color: AppColors.zinc500, letterSpacing: 1.5)),
-          Text(value, style: const TextStyle(fontFamily: 'Courier New', fontSize: 12, color: AppColors.zinc300, fontWeight: FontWeight.bold)),
-        ],
-      ),
     );
   }
 }

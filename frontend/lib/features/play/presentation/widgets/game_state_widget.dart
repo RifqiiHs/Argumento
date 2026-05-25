@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/models.dart';
 import '../../../../core/utils/widgets.dart';
@@ -14,7 +16,6 @@ class GameStateWidget extends StatefulWidget {
   final Future<void> Function(String reason) onReject;
   final VoidCallback onNext;
   final Color accentColor;
-  final bool showManual;
 
   const GameStateWidget({
     super.key,
@@ -27,7 +28,6 @@ class GameStateWidget extends StatefulWidget {
     required this.onReject,
     required this.onNext,
     required this.accentColor,
-    this.showManual = false,
   });
 
   @override
@@ -37,13 +37,10 @@ class GameStateWidget extends StatefulWidget {
 class _GameStateWidgetState extends State<GameStateWidget> {
   bool _isRejecting = false;
   final _reasonCtrl = TextEditingController();
-  int _mobileTab = 0; // 0 = game, 1 = manual
+  int _tab = 0;
 
   @override
-  void dispose() {
-    _reasonCtrl.dispose();
-    super.dispose();
-  }
+  void dispose() { _reasonCtrl.dispose(); super.dispose(); }
 
   void _handleNext() {
     setState(() { _isRejecting = false; _reasonCtrl.clear(); });
@@ -54,21 +51,19 @@ class _GameStateWidgetState extends State<GameStateWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Mobile tab switcher
+        // Tab bar
         Container(
-          color: Colors.black,
+          color: AppColors.bg800,
+          padding: const EdgeInsets.all(8),
           child: Row(
             children: [
-              _TabBtn(label: 'TERMINAL', icon: Icons.terminal, isActive: _mobileTab == 0,
-                  accentColor: widget.accentColor, onTap: () => setState(() => _mobileTab = 0)),
-              _TabBtn(label: 'MANUAL', icon: Icons.book_outlined, isActive: _mobileTab == 1,
-                  accentColor: widget.accentColor, onTap: () => setState(() => _mobileTab = 1)),
+              _TabBtn(label: 'Post', icon: Icons.article_rounded, isActive: _tab == 0, accent: widget.accentColor, onTap: () => setState(() => _tab = 0)),
+              const SizedBox(width: 8),
+              _TabBtn(label: 'Field Manual', icon: Icons.menu_book_rounded, isActive: _tab == 1, accent: widget.accentColor, onTap: () => setState(() => _tab = 1)),
             ],
           ),
         ),
-        Expanded(
-          child: _mobileTab == 0 ? _buildGamePanel() : const ManualWidget(),
-        ),
+        Expanded(child: _tab == 0 ? _buildGamePanel() : const ManualWidget()),
       ],
     );
   }
@@ -78,132 +73,69 @@ class _GameStateWidgetState extends State<GameStateWidget> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Post Card
+          // Post card
           Container(
             decoration: BoxDecoration(
-              color: AppColors.zinc950,
-              border: Border.all(color: widget.accentColor, width: 2),
+              color: AppColors.bg800,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4))],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
+                // Card header
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: widget.accentColor.withOpacity(0.1),
-                    border: Border(bottom: BorderSide(color: widget.accentColor, width: 2)),
+                  decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: AppColors.border)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.description, color: widget.accentColor, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            'POST #${widget.currentIndex + 1}',
-                            style: TextStyle(
-                              fontFamily: 'Courier New',
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: widget.accentColor,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                        ],
+                      Container(
+                        width: 36, height: 36,
+                        decoration: BoxDecoration(color: AppColors.bg600, borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.person_rounded, size: 18, color: AppColors.textMuted),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(widget.currentPost.headline, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text('Post #${widget.currentIndex + 1}', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+                        ]),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: widget.accentColor),
-                          color: widget.accentColor.withOpacity(0.1),
-                        ),
-                        child: Text(
-                          'REF: ${widget.currentPost.id.substring(widget.currentPost.id.length > 6 ? widget.currentPost.id.length - 6 : 0).toUpperCase()}',
-                          style: TextStyle(
-                            fontFamily: 'Courier New',
-                            fontSize: 10,
-                            color: widget.accentColor,
-                            letterSpacing: 1,
-                          ),
-                        ),
+                        decoration: BoxDecoration(color: AppColors.bg700, borderRadius: BorderRadius.circular(6), border: Border.all(color: AppColors.border)),
+                        child: Text('AI Generated', style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted)),
                       ),
                     ],
                   ),
                 ),
 
-                // Content
+                // Post content
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(left: 12),
-                        decoration: BoxDecoration(
-                          border: Border(left: BorderSide(color: widget.accentColor, width: 4)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'HEADLINE',
-                              style: TextStyle(
-                                fontFamily: 'Courier New',
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: widget.accentColor,
-                                letterSpacing: 3,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              widget.currentPost.headline,
-                              style: const TextStyle(
-                                fontFamily: 'Courier New',
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                height: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'CONTENT',
-                              style: TextStyle(
-                                fontFamily: 'Courier New',
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.zinc500,
-                                letterSpacing: 3,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              widget.currentPost.content,
-                              style: const TextStyle(
-                                fontFamily: 'Courier New',
-                                fontSize: 15,
-                                color: AppColors.zinc300,
-                                height: 1.6,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    widget.currentPost.content,
+                    style: GoogleFonts.inter(fontSize: 15, color: AppColors.textSecondary, height: 1.65),
                   ),
                 ),
 
-                // Action Area
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                // Action area
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: AppColors.border)),
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
+                    color: AppColors.bg700,
+                  ),
                   child: widget.isResult ? _buildVerdictUI() : _buildActionUI(),
                 ),
               ],
             ),
-          ),
+          ).animate().fadeIn().slideY(begin: 0.05, end: 0),
         ],
       ),
     );
@@ -211,244 +143,130 @@ class _GameStateWidgetState extends State<GameStateWidget> {
 
   Widget _buildVerdictUI() {
     final isCorrect = widget.verdict?.isCorrect ?? false;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isCorrect ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-        border: Border.all(
-          color: isCorrect ? Colors.green.withOpacity(0.5) : Colors.red.withOpacity(0.5),
-          width: 2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    final color = isCorrect ? AppColors.success : AppColors.error;
+    final bgColor = isCorrect ? AppColors.successBg : AppColors.errorBg;
+
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(10), border: Border.all(color: color.withValues(alpha: 0.3))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                isCorrect ? Icons.shield : Icons.warning_amber,
-                color: isCorrect ? Colors.green : Colors.red,
-                size: 22,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                isCorrect ? 'ASSESSMENT CORRECT' : 'ASSESSMENT FAILED',
-                style: TextStyle(
-                  fontFamily: 'Courier New',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: isCorrect ? Colors.green : Colors.red,
-                  letterSpacing: 1,
-                ),
-              ),
+              Row(children: [
+                Icon(isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded, color: color, size: 20),
+                const SizedBox(width: 8),
+                Text(isCorrect ? 'Correct Assessment' : 'Incorrect Assessment',
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+              ]),
+              const SizedBox(height: 8),
+              Text(widget.verdict?.message ?? '', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary, height: 1.5)),
             ],
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.only(left: 12),
-            decoration: const BoxDecoration(border: Border(left: BorderSide(color: AppColors.zinc700, width: 2))),
-            child: Text(
-              widget.verdict?.message ?? '',
-              style: const TextStyle(fontFamily: 'Courier New', fontSize: 13, color: AppColors.zinc300, height: 1.5),
-            ),
-          ),
-          const SizedBox(height: 16),
-          AccentButton(
-            label: 'Next Document →',
-            onPressed: _handleNext,
-            accentColor: widget.accentColor,
-          ),
-        ],
-      ),
+        ).animate().fadeIn().scale(begin: const Offset(0.98, 0.98)),
+        const SizedBox(height: 12),
+        AccentButton(label: 'Next Post', onPressed: _handleNext, accentColor: widget.accentColor,
+            icon: const Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.black)),
+      ],
     );
   }
 
   Widget _buildActionUI() {
     if (_isRejecting) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.1),
-          border: Border.all(color: Colors.red.withOpacity(0.5), width: 2),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Row(
-                  children: [
-                    Icon(Icons.warning_amber, color: Colors.red, size: 16),
-                    SizedBox(width: 6),
-                    Text(
-                      'VIOLATION REPORT',
-                      style: TextStyle(
-                        fontFamily: 'Courier New',
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-                GestureDetector(
-                  onTap: () => setState(() => _isRejecting = false),
-                  child: const Text(
-                    '[Cancel]',
-                    style: TextStyle(fontFamily: 'Courier New', fontSize: 11, color: AppColors.zinc500),
-                  ),
-                ),
-              ],
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Rejection Report', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.error)),
+              GestureDetector(
+                onTap: () => setState(() => _isRejecting = false),
+                child: Text('Cancel', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _reasonCtrl,
+            maxLines: 3,
+            onChanged: (_) => setState(() {}),
+            style: GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: 'Describe the logical flaw or manipulation tactic you detected...',
+              hintStyle: GoogleFonts.inter(color: AppColors.textDisabled, fontSize: 13),
+              filled: true,
+              fillColor: AppColors.bg800,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
+              contentPadding: const EdgeInsets.all(14),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _reasonCtrl,
-              maxLines: 4,
-              style: const TextStyle(fontFamily: 'Courier New', color: Colors.red, fontSize: 13),
-              decoration: InputDecoration(
-                hintText: 'Describe the identified violation or manipulation tactic...',
-                hintStyle: const TextStyle(color: Color(0xFF7F1D1D), fontFamily: 'Courier New', fontSize: 12),
-                filled: true,
-                fillColor: Colors.black.withOpacity(0.5),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(color: Colors.red.withOpacity(0.5)),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(color: Colors.red, width: 2),
-                ),
-                contentPadding: const EdgeInsets.all(12),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: (widget.isAnalyzing || _reasonCtrl.text.trim().isEmpty) ? null : () => widget.onReject(_reasonCtrl.text),
+              icon: widget.isAnalyzing
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Icon(Icons.send_rounded, size: 16),
+              label: Text(widget.isAnalyzing ? 'Analyzing...' : 'Submit Report', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                disabledBackgroundColor: AppColors.error.withValues(alpha: 0.4),
               ),
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: (widget.isAnalyzing || _reasonCtrl.text.trim().isEmpty)
-                    ? null
-                    : () => widget.onReject(_reasonCtrl.text),
-                icon: widget.isAnalyzing
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
-                    : const Icon(Icons.shield_outlined, color: Colors.black, size: 18),
-                label: Text(
-                  widget.isAnalyzing ? 'ANALYZING...' : 'SUBMIT REPORT',
-                  style: const TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 1.5),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.black,
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  disabledBackgroundColor: Colors.red.withOpacity(0.4),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
     return Column(
       children: [
-        const Center(
-          child: Text(
-            'RENDER VERDICT',
-            style: TextStyle(
-              fontFamily: 'Courier New',
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: AppColors.zinc500,
-              letterSpacing: 3,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: widget.isAnalyzing ? null : widget.onApprove,
-                icon: const Icon(Icons.verified_user_outlined, size: 20),
-                label: const Text(
-                  'APPROVE',
-                  style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 2),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.withOpacity(0.1),
-                  foregroundColor: Colors.green,
-                  side: const BorderSide(color: Colors.green, width: 2),
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: widget.isAnalyzing ? null : () => setState(() => _isRejecting = true),
-                icon: const Icon(Icons.gpp_bad_outlined, size: 20),
-                label: const Text(
-                  'REJECT',
-                  style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 2),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.withOpacity(0.1),
-                  foregroundColor: Colors.red,
-                  side: const BorderSide(color: Colors.red, width: 2),
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                ),
-              ),
-            ),
-          ],
+        Text('Your verdict?', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+        const SizedBox(height: 10),
+        GameActionButtons(
+          onApprove: widget.onApprove,
+          onReject: () => setState(() => _isRejecting = true),
+          isDisabled: widget.isAnalyzing,
         ),
       ],
     );
   }
 }
 
-// ---- Tab button ----
 class _TabBtn extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool isActive;
-  final Color accentColor;
+  final Color accent;
   final VoidCallback onTap;
-
-  const _TabBtn({required this.label, required this.icon, required this.isActive, required this.accentColor, required this.onTap});
+  const _TabBtn({required this.label, required this.icon, required this.isActive, required this.accent, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? accentColor : AppColors.zinc900.withOpacity(0.4),
-            border: Border(
-              right: const BorderSide(color: AppColors.zinc800),
-              bottom: BorderSide(color: isActive ? accentColor : AppColors.zinc800),
-            ),
+            color: isActive ? accent.withValues(alpha: 0.12) : AppColors.bg700,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: isActive ? accent.withValues(alpha: 0.4) : AppColors.border),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 18, color: isActive ? Colors.black : AppColors.zinc400),
+              Icon(icon, size: 16, color: isActive ? accent : AppColors.textMuted),
               const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontFamily: 'Courier New',
-                  fontSize: 11,
-                  fontWeight: FontWeight.w900,
-                  color: isActive ? Colors.black : AppColors.zinc400,
-                  letterSpacing: 1.5,
-                ),
-              ),
+              Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: isActive ? FontWeight.w600 : FontWeight.w400, color: isActive ? accent : AppColors.textMuted)),
             ],
           ),
         ),

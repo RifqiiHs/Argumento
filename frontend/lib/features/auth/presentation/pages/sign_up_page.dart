@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/api_service.dart';
 import '../../../../core/utils/app_state.dart';
@@ -8,7 +10,6 @@ import '../../../../core/utils/widgets.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
-
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
@@ -35,16 +36,16 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _validate() {
     final errors = <String, String?>{};
     if (_usernameCtrl.text.trim().length < 3) {
-      errors['username'] = '* Username must be > 3 chars';
+      errors['username'] = 'Minimum 3 characters';
     }
-    if (!_emailCtrl.text.contains('@')) {
-      errors['email'] = '* Valid email required';
+    if (!_emailCtrl.text.contains('@') || !_emailCtrl.text.contains('.')) {
+      errors['email'] = 'Enter a valid email address';
     }
     if (_passwordCtrl.text.length < 8) {
-      errors['password'] = '* Min 8 chars required';
+      errors['password'] = 'Minimum 8 characters';
     }
     if (_confirmCtrl.text != _passwordCtrl.text) {
-      errors['confirm'] = '* Passwords do not match';
+      errors['confirm'] = 'Passwords do not match';
     }
     setState(() => _errors = errors);
     return errors.isEmpty;
@@ -61,12 +62,13 @@ class _SignUpPageState extends State<SignUpPage> {
       );
       await context.read<UserCubit>().loadUser();
       if (mounted) {
-        ArgumentoSnackBar.show(context, 'Account created successfully.');
+        ArgumentoSnackBar.show(context, 'Account created successfully!');
         context.go('/dashboard');
       }
     } catch (e) {
       if (mounted) {
-        ArgumentoSnackBar.show(context, 'Registration failed. Try again.', isError: true);
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        ArgumentoSnackBar.show(context, msg, isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -76,103 +78,139 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
+              // Back button
+              GestureDetector(
+                onTap: () => context.go('/sign-in'),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.bg700,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_new_rounded,
+                      size: 14, color: AppColors.textSecondary),
+                ),
+              ),
+              const SizedBox(height: 28),
+              Text('Create Account',
+                  style: GoogleFonts.inter(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5)),
+              const SizedBox(height: 4),
+              Text('Start your critical thinking journey',
+                  style: GoogleFonts.inter(
+                      fontSize: 13, color: AppColors.textMuted)),
+              const SizedBox(height: 28),
+
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.green500, width: 3),
+                  color: AppColors.bg800,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Create Account',
-                      style: TextStyle(
-                        fontFamily: 'Courier New',
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Initialize your profile to start tracking your progress.',
-                      style: TextStyle(fontFamily: 'Courier New', fontSize: 13, color: AppColors.zinc500),
-                    ),
-                    const SizedBox(height: 28),
-
                     ArgumentoTextField(
                       label: 'Username',
-                      placeholder: 'Enter username',
+                      placeholder: 'Choose a username',
                       controller: _usernameCtrl,
                       errorText: _errors['username'],
+                      prefixIcon: const Icon(Icons.person_outline_rounded,
+                          size: 18, color: AppColors.textMuted),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     ArgumentoTextField(
                       label: 'Email',
-                      placeholder: 'Enter email',
+                      placeholder: 'your@email.com',
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                       errorText: _errors['email'],
+                      prefixIcon: const Icon(Icons.email_outlined,
+                          size: 18, color: AppColors.textMuted),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     ArgumentoTextField(
                       label: 'Password',
-                      placeholder: '••••••••',
+                      placeholder: 'Min. 8 characters',
                       controller: _passwordCtrl,
                       obscureText: !_showPassword,
                       errorText: _errors['password'],
+                      prefixIcon: const Icon(Icons.lock_outline_rounded,
+                          size: 18, color: AppColors.textMuted),
                       suffixIcon: IconButton(
-                        icon: Icon(_showPassword ? Icons.visibility_off : Icons.visibility,
-                            color: AppColors.zinc500, size: 18),
-                        onPressed: () => setState(() => _showPassword = !_showPassword),
+                        icon: Icon(
+                          _showPassword
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          size: 18,
+                          color: AppColors.textMuted,
+                        ),
+                        onPressed: () =>
+                            setState(() => _showPassword = !_showPassword),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     ArgumentoTextField(
                       label: 'Confirm Password',
-                      placeholder: '••••••••',
+                      placeholder: 'Re-enter password',
                       controller: _confirmCtrl,
                       obscureText: !_showConfirm,
                       errorText: _errors['confirm'],
+                      prefixIcon: const Icon(Icons.lock_outline_rounded,
+                          size: 18, color: AppColors.textMuted),
                       suffixIcon: IconButton(
-                        icon: Icon(_showConfirm ? Icons.visibility_off : Icons.visibility,
-                            color: AppColors.zinc500, size: 18),
-                        onPressed: () => setState(() => _showConfirm = !_showConfirm),
+                        icon: Icon(
+                          _showConfirm
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          size: 18,
+                          color: AppColors.textMuted,
+                        ),
+                        onPressed: () =>
+                            setState(() => _showConfirm = !_showConfirm),
                       ),
                     ),
-                    const SizedBox(height: 28),
-
+                    const SizedBox(height: 24),
                     AccentButton(
-                      label: _isLoading ? 'Registering...' : 'Sign Up',
+                      label: 'Create Account',
                       onPressed: _isLoading ? null : _submit,
                       isLoading: _isLoading,
                     ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () => context.go('/sign-in'),
-                        child: const Text(
-                          'Already have an account? Sign In',
-                          style: TextStyle(
-                            fontFamily: 'Courier New',
-                            fontSize: 13,
-                            color: AppColors.zinc500,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
+              ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.05, end: 0),
+
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Already have an account? ',
+                      style: GoogleFonts.inter(
+                          fontSize: 14, color: AppColors.textMuted)),
+                  GestureDetector(
+                    onTap: () => context.go('/sign-in'),
+                    child: Text('Sign In',
+                        style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600)),
+                  ),
+                ],
               ),
+              const SizedBox(height: 32),
             ],
           ),
         ),

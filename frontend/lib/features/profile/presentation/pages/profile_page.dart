@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/api_service.dart';
@@ -11,7 +13,6 @@ import '../../../../core/utils/widgets.dart';
 class ProfilePage extends StatefulWidget {
   final String userId;
   const ProfilePage({super.key, required this.userId});
-
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -21,201 +22,158 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = true;
 
   @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  void initState() { super.initState(); _load(); }
 
   Future<void> _load() async {
     try {
       final user = await ApiService().getUserById(widget.userId);
       setState(() { _profileUser = user; _isLoading = false; });
-    } catch (_) {
-      setState(() => _isLoading = false);
-    }
+    } catch (_) { setState(() => _isLoading = false); }
   }
 
   @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<UserCubit>().state.user;
-    final accentColor = AppTheme.getAccentColor(currentUser?.activeTheme ?? 'theme_green');
+    final accent = AppTheme.getAccentColor(currentUser?.activeTheme ?? 'theme_green');
     final profileAccent = AppTheme.getAccentColor(_profileUser?.activeTheme ?? 'theme_green');
     final isOwnProfile = _profileUser?.id == currentUser?.id;
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: AppBar(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: AppColors.zinc400), onPressed: () => Navigator.of(context).pop()),
-        title: const Text('PROFILE', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1)),
-        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.zinc800)),
+        leading: IconButton(
+          icon: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: AppColors.bg700, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
+              child: const Icon(Icons.arrow_back_ios_new_rounded, size: 14, color: AppColors.textSecondary)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('Profile', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+        bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.border)),
       ),
       body: _isLoading
-          ? LoadingOverlay(accentColor: accentColor)
+          ? LoadingOverlay(accentColor: accent)
           : _profileUser == null
               ? const EmptyState(title: 'User not found')
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Profile header
+                      // Profile hero
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          border: Border.all(color: profileAccent, width: 2),
-                          color: profileAccent.withOpacity(0.05),
+                          gradient: LinearGradient(colors: [profileAccent.withValues(alpha: 0.1), AppColors.bg800], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: profileAccent.withValues(alpha: 0.3)),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(border: Border.all(color: profileAccent.withOpacity(0.5)), color: profileAccent.withOpacity(0.1)),
-                                      child: Text('OPERATOR', style: TextStyle(fontFamily: 'Courier New', fontSize: 9, fontWeight: FontWeight.bold, color: profileAccent, letterSpacing: 1.5)),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      _profileUser!.username.toUpperCase(),
-                                      style: const TextStyle(fontFamily: 'Courier New', fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  width: 56,
-                                  height: 56,
-                                  decoration: BoxDecoration(color: profileAccent, shape: BoxShape.rectangle),
-                                  child: Center(
-                                    child: Text(
-                                      _profileUser!.username.substring(0, 1).toUpperCase(),
-                                      style: const TextStyle(fontFamily: 'Courier New', fontSize: 28, fontWeight: FontWeight.w900, color: Colors.black),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            Container(
+                              width: 64, height: 64,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: [profileAccent, profileAccent.withValues(alpha: 0.6)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [BoxShadow(color: profileAccent.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
+                              ),
+                              child: Center(child: Text(_profileUser!.username.substring(0, 1).toUpperCase(),
+                                  style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.black))),
                             ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_today, color: profileAccent, size: 14),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Since ${_profileUser!.createdAt != null ? DateFormat('MMM yyyy').format(_profileUser!.createdAt!) : 'Unknown'}',
-                                  style: TextStyle(fontFamily: 'Courier New', fontSize: 12, color: profileAccent),
-                                ),
-                              ],
-                            ),
+                            const SizedBox(width: 16),
+                            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text(_profileUser!.username, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Member since ${_profileUser!.createdAt != null ? DateFormat('MMM yyyy').format(_profileUser!.createdAt!) : 'Unknown'}',
+                                style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+                              ),
+                              const SizedBox(height: 8),
+                              StatusBadge(label: '${_profileUser!.totalExp} XP', color: profileAccent),
+                            ])),
                           ],
                         ),
-                      ),
-
+                      ).animate().fadeIn(),
                       const SizedBox(height: 16),
 
                       // Stats grid
                       GridView.count(
-                        crossAxisCount: 2,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 1.5,
+                        crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 1.5,
                         children: [
-                          StatCard(label: 'Total EXP', value: '${_profileUser!.totalExp}', accentColor: profileAccent, icon: Icon(Icons.bar_chart, color: profileAccent, size: 18)),
-                          StatCard(label: 'Best Streak', value: '${_profileUser!.bestStreak}', subValue: 'days', accentColor: profileAccent, icon: Icon(Icons.local_fire_department, color: profileAccent, size: 18)),
-                          StatCard(label: 'Posts Reviewed', value: '${_profileUser!.postsHistory.length}', accentColor: profileAccent, icon: Icon(Icons.description, color: profileAccent, size: 18)),
+                          StatCard(label: 'Best Streak', value: '${_profileUser!.bestStreak}', subValue: 'days', accentColor: profileAccent, icon: Icon(Icons.local_fire_department_rounded, color: profileAccent, size: 16)),
+                          StatCard(label: 'Posts Reviewed', value: '${_profileUser!.postsHistory.length}', accentColor: profileAccent, icon: Icon(Icons.article_rounded, color: profileAccent, size: 16)),
+                          StatCard(label: 'Correct', value: '${_profileUser!.postsCorrect}', accentColor: profileAccent, icon: Icon(Icons.check_circle_rounded, color: profileAccent, size: 16)),
                           StatCard(
                             label: 'Accuracy',
-                            value: _profileUser!.postsHistory.isNotEmpty
-                                ? '${((_profileUser!.postsCorrect / _profileUser!.postsHistory.length) * 100).toStringAsFixed(1)}%'
-                                : 'N/A',
+                            value: _profileUser!.postsHistory.isNotEmpty ? '${((_profileUser!.postsCorrect / _profileUser!.postsHistory.length) * 100).toStringAsFixed(1)}%' : 'N/A',
                             accentColor: profileAccent,
-                            icon: Icon(Icons.track_changes, color: profileAccent, size: 18),
+                            icon: Icon(Icons.gps_fixed_rounded, color: profileAccent, size: 16),
                           ),
                         ],
-                      ),
-
+                      ).animate().fadeIn(delay: 100.ms),
                       const SizedBox(height: 16),
 
                       // Campaign progress
                       if (_profileUser!.campaignProgress.isNotEmpty) ...[
                         Container(
                           padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(border: Border.all(color: AppColors.zinc800)),
+                          decoration: BoxDecoration(color: AppColors.bg800, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('CAMPAIGN PROGRESS', style: TextStyle(fontFamily: 'Courier New', fontSize: 10, color: AppColors.zinc500, letterSpacing: 2, fontWeight: FontWeight.bold)),
+                              Text('Campaign Progress', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
                               const SizedBox(height: 12),
                               ..._profileUser!.campaignProgress.map((cp) => Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
-                                child: Row(
-                                  children: [
-                                    Icon(cp.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked, color: cp.isCompleted ? profileAccent : AppColors.zinc600, size: 18),
-                                    const SizedBox(width: 10),
-                                    Text(cp.campaignId.replaceAll('_', ' ').toUpperCase(), style: TextStyle(fontFamily: 'Courier New', fontSize: 12, color: cp.isCompleted ? profileAccent : AppColors.zinc500, fontWeight: FontWeight.bold)),
-                                    const Spacer(),
-                                    Text('${cp.levelsCompleted.length} levels', style: const TextStyle(fontFamily: 'Courier New', fontSize: 11, color: AppColors.zinc500)),
-                                  ],
-                                ),
+                                child: Row(children: [
+                                  Icon(cp.isCompleted ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                                      color: cp.isCompleted ? profileAccent : AppColors.textMuted, size: 18),
+                                  const SizedBox(width: 10),
+                                  Expanded(child: Text(cp.campaignId.replaceAll('_', ' '), style: GoogleFonts.inter(fontSize: 13, color: cp.isCompleted ? profileAccent : AppColors.textSecondary, fontWeight: FontWeight.w500))),
+                                  Text('${cp.levelsCompleted.length} levels', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+                                ]),
                               )),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 16),
+                        ).animate().fadeIn(delay: 200.ms),
+                        const SizedBox(height: 12),
                       ],
 
                       // Skills
                       if (_profileUser!.stats.isNotEmpty) ...[
                         Container(
                           padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(border: Border.all(color: AppColors.zinc800)),
+                          decoration: BoxDecoration(color: AppColors.bg800, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('SKILL RATINGS', style: TextStyle(fontFamily: 'Courier New', fontSize: 10, color: AppColors.zinc500, letterSpacing: 2, fontWeight: FontWeight.bold)),
+                              Text('Skill Ratings', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
                               const SizedBox(height: 12),
                               ..._profileUser!.stats.map((s) {
                                 final pct = s.total > 0 ? s.correct / s.total : 0.0;
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(s.name.toUpperCase(), style: const TextStyle(fontFamily: 'Courier New', fontSize: 10, color: AppColors.zinc400, letterSpacing: 1)),
-                                          Text('${(pct * 100).toStringAsFixed(0)}%', style: TextStyle(fontFamily: 'Courier New', fontSize: 11, color: profileAccent, fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      LinearProgressIndicator(value: pct, backgroundColor: AppColors.zinc800, valueColor: AlwaysStoppedAnimation<Color>(profileAccent), minHeight: 4),
-                                    ],
-                                  ),
+                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                      Text(s.name, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary)),
+                                      Text('${(pct * 100).toStringAsFixed(0)}%', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: profileAccent)),
+                                    ]),
+                                    const SizedBox(height: 4),
+                                    ClipRRect(borderRadius: BorderRadius.circular(4),
+                                      child: LinearProgressIndicator(value: pct, backgroundColor: AppColors.bg600, valueColor: AlwaysStoppedAnimation<Color>(profileAccent), minHeight: 5)),
+                                  ]),
                                 );
                               }),
                             ],
                           ),
-                        ),
+                        ).animate().fadeIn(delay: 250.ms),
+                        const SizedBox(height: 16),
                       ],
 
-                      const SizedBox(height: 24),
-
-                      if (isOwnProfile)
-                        AccentButton(
-                          label: 'Edit Settings',
-                          accentColor: profileAccent,
-                          onPressed: () => context.go('/settings'),
-                        ),
-
-                      const SizedBox(height: 40),
+                      if (isOwnProfile) ...[
+                        AccentButton(label: 'Edit Settings', accentColor: profileAccent, onPressed: () => context.go('/settings')),
+                        const SizedBox(height: 40),
+                      ],
                     ],
                   ),
                 ),

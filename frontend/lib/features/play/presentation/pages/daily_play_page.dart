@@ -182,7 +182,7 @@ class _DailyPlayPageState extends State<DailyPlayPage> {
 
     if (_isLoadingStorage) {
       return Scaffold(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         body: LoadingOverlay(accentColor: accentColor),
       );
     }
@@ -204,7 +204,7 @@ class _DailyPlayPageState extends State<DailyPlayPage> {
     // All posts done
     if (_index >= _posts.length) {
       return Scaffold(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +212,6 @@ class _DailyPlayPageState extends State<DailyPlayPage> {
               Text(
                 'SHIFT COMPLETE',
                 style: TextStyle(
-                  fontFamily: 'Courier New',
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   color: accentColor,
@@ -236,21 +235,21 @@ class _DailyPlayPageState extends State<DailyPlayPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: AppBar(
-        backgroundColor: AppColors.zinc950,
+        backgroundColor: AppColors.bg900,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.zinc400),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
           onPressed: () => context.go('/dashboard'),
         ),
         title: Text(
           'DAILY SHIFT',
-          style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, color: accentColor, letterSpacing: 2),
+          style: TextStyle(fontWeight: FontWeight.bold, color: accentColor, letterSpacing: 2),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: AppColors.zinc800),
+          child: Container(height: 1, color: AppColors.bg700),
         ),
       ),
       body: GameStateWidget(

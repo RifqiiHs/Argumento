@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/api_service.dart';
 import '../../../../core/utils/app_state.dart';
@@ -9,7 +11,6 @@ import '../../../shared/bottom_nav.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
-
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -26,7 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       await ApiService().sendVerifyEmail(user.email);
       if (mounted) ArgumentoSnackBar.show(context, 'Verification email sent!');
-    } catch (e) {
+    } catch (_) {
       if (mounted) ArgumentoSnackBar.show(context, 'Failed to send email.', isError: true);
     } finally {
       if (mounted) setState(() => _isResending = false);
@@ -39,24 +40,19 @@ class _SettingsPageState extends State<SettingsPage> {
       await ApiService().deleteAccount();
       await context.read<UserCubit>().logout();
       if (mounted) context.go('/sign-in');
-    } catch (e) {
+    } catch (_) {
       if (mounted) ArgumentoSnackBar.show(context, 'Failed to delete account.', isError: true);
       setState(() => _isDeleting = false);
     }
   }
 
-  Future<void> _logout() async {
-    await context.read<UserCubit>().logout();
-    if (mounted) context.go('/sign-in');
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserCubit>().state.user;
-    final accentColor = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
+    final accent = AppTheme.getAccentColor(user?.activeTheme ?? 'theme_green');
 
     return Scaffold(
-      backgroundColor: AppColors.zinc950,
+      backgroundColor: AppColors.bg900,
       appBar: ArgumentoAppBar(title: 'Settings'),
       bottomNavigationBar: const AppBottomNav(currentIndex: 4),
       body: SingleChildScrollView(
@@ -64,175 +60,147 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Account Section
-            _SectionTitle(title: 'Account'),
-            _InfoCard(
-              children: [
-                _InfoRow(label: 'Username', value: user?.username ?? '-'),
-                _InfoRow(label: 'Email', value: user?.email ?? '-'),
-                _InfoRow(label: 'Verified', value: user?.isVerified == true ? '✓ Yes' : '✗ No'),
-                _InfoRow(label: 'Member Since', value: user?.createdAt?.year.toString() ?? '-'),
-              ],
-            ),
-
+            // Profile header
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [AppColors.primaryBg, AppColors.bg800], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: accent.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 56, height: 56,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [accent, accent.withValues(alpha: 0.6)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Center(child: Text(
+                      (user?.username ?? 'A').substring(0, 1).toUpperCase(),
+                      style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.black),
+                    )),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(user?.username ?? '—', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                    Text(user?.email ?? '—', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                    const SizedBox(height: 6),
+                    Row(children: [
+                      user?.isVerified == true
+                          ? const StatusBadge(label: '✓ Verified', color: AppColors.success)
+                          : const StatusBadge(label: 'Not verified', color: AppColors.warning),
+                    ]),
+                  ])),
+                ],
+              ),
+            ).animate().fadeIn(),
             const SizedBox(height: 20),
 
-            // Verification section
+            // Verification warning
             if (user?.isVerified == false) ...[
-              _SectionTitle(title: 'Verification'),
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.yellow.withOpacity(0.05),
-                  border: Border.all(color: Colors.yellow.withOpacity(0.4)),
-                ),
+                decoration: BoxDecoration(color: AppColors.warningBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.warning.withValues(alpha: 0.3))),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.warning_amber, color: Colors.yellow, size: 18),
-                        SizedBox(width: 8),
-                        Text('Email not verified', style: TextStyle(fontFamily: 'Courier New', fontSize: 13, fontWeight: FontWeight.bold, color: Colors.yellow)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Verify your email to unlock all features including the Daily Shift.',
-                      style: TextStyle(fontFamily: 'Courier New', fontSize: 12, color: AppColors.zinc400),
-                    ),
+                    Row(children: [
+                      const Icon(Icons.info_outline_rounded, color: AppColors.warning, size: 18),
+                      const SizedBox(width: 8),
+                      Text('Email not verified', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.warning)),
+                    ]),
+                    const SizedBox(height: 6),
+                    Text('Verify your email to unlock the Daily Shift.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
                     const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: _isResending ? null : _resendVerification,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.yellow.withOpacity(0.15),
-                        foregroundColor: Colors.yellow,
-                        side: const BorderSide(color: Colors.yellow),
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text(
-                        _isResending ? 'Sending...' : 'Resend Verification Email',
-                        style: const TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 1),
+                    SizedBox(
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: _isResending ? null : _resendVerification,
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                        child: Text(_isResending ? 'Sending...' : 'Resend Verification Email', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700)),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
             ],
 
-            // Stats Section
-            _SectionTitle(title: 'Your Stats'),
-            _InfoCard(
-              children: [
-                _InfoRow(label: 'Total EXP', value: '${user?.totalExp ?? 0}'),
-                _InfoRow(label: 'Total Coins', value: '${user?.totalCoins ?? 0}'),
-                _InfoRow(label: 'Current Streak', value: '${user?.currentStreak ?? 0} days'),
-                _InfoRow(label: 'Best Streak', value: '${user?.bestStreak ?? 0} days'),
-                _InfoRow(label: 'Posts Reviewed', value: '${user?.postsHistory.length ?? 0}'),
-                _InfoRow(label: 'Accuracy', value: user != null && user.postsHistory.isNotEmpty
-                    ? '${((user.postsCorrect / user.postsHistory.length) * 100).toStringAsFixed(1)}%'
-                    : 'N/A'),
-              ],
-            ),
-
+            // Stats
+            SectionLabel(text: 'Your Stats'),
+            InfoCard(children: [
+              InfoRow(label: 'Total EXP', value: '${user?.totalExp ?? 0} XP', valueColor: accent),
+              InfoRow(label: 'Total Coins', value: '${user?.totalCoins ?? 0}'),
+              InfoRow(label: 'Current Streak', value: '${user?.currentStreak ?? 0} days'),
+              InfoRow(label: 'Best Streak', value: '${user?.bestStreak ?? 0} days'),
+              InfoRow(label: 'Posts Reviewed', value: '${user?.postsHistory.length ?? 0}'),
+              InfoRow(
+                label: 'Accuracy',
+                value: user != null && user.postsHistory.isNotEmpty ? '${((user.postsCorrect / user.postsHistory.length) * 100).toStringAsFixed(1)}%' : 'N/A',
+                isLast: true,
+              ),
+            ]),
             const SizedBox(height: 20),
 
-            // Quick links
-            _SectionTitle(title: 'Navigation'),
-            _LinkCard(
-              items: [
-                _LinkItem(icon: Icons.radar, label: 'Skills Radar', onTap: () => context.go('/skills-radar')),
-                _LinkItem(icon: Icons.history, label: 'Post Log', onTap: () => context.go('/history')),
-                _LinkItem(icon: Icons.message_outlined, label: 'Submit Feedback', onTap: () => context.go('/feedbacks')),
-                _LinkItem(icon: Icons.person_outline, label: 'My Profile', onTap: () => context.go('/profile/${user?.id}')),
-              ],
-            ),
-
+            // Navigation
+            SectionLabel(text: 'More'),
+            InfoCard(children: [
+              _NavLink(icon: Icons.radar_rounded, label: 'Skills Radar', color: AppColors.primary, onTap: () => context.go('/skills-radar')),
+              _NavLink(icon: Icons.history_rounded, label: 'Post History', color: AppColors.accentAmber, onTap: () => context.go('/history')),
+              _NavLink(icon: Icons.feedback_outlined, label: 'Submit Feedback', color: AppColors.accentCyan, onTap: () => context.go('/feedbacks')),
+              _NavLink(icon: Icons.person_rounded, label: 'My Profile', color: AppColors.accentRed, onTap: () => context.go('/profile/${user?.id}'), isLast: true),
+            ]),
             const SizedBox(height: 20),
 
             // Sign out
-            _SectionTitle(title: 'Session'),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: _logout,
-                icon: const Icon(Icons.logout, size: 18),
-                label: const Text('SIGN OUT', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 2)),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.zinc400,
-                  side: const BorderSide(color: AppColors.zinc700),
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
+            ArgumentoOutlinedButton(
+              label: 'Sign Out',
+              icon: const Icon(Icons.logout_rounded, size: 16, color: AppColors.textSecondary),
+              onPressed: () async { await context.read<UserCubit>().logout(); if (mounted) context.go('/sign-in'); },
             ),
-
             const SizedBox(height: 20),
 
-            // Danger Zone
-            _SectionTitle(title: 'Danger Zone', color: Colors.red),
-            if (!_showDeleteConfirm) ...[
+            // Danger zone
+            SectionLabel(text: 'Danger Zone'),
+            if (!_showDeleteConfirm)
               SizedBox(
                 width: double.infinity,
-                child: OutlinedButton(
+                height: 50,
+                child: OutlinedButton.icon(
                   onPressed: () => setState(() => _showDeleteConfirm = true),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text('DELETE ACCOUNT', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 2)),
+                  icon: const Icon(Icons.delete_forever_rounded, size: 16, color: AppColors.error),
+                  label: Text('Delete Account', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.error)),
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: AppColors.error, width: 1), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                 ),
-              ),
-            ] else ...[
+              )
+            else
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.08),
-                  border: Border.all(color: Colors.red, width: 2),
-                ),
+                decoration: BoxDecoration(color: AppColors.errorBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.error.withValues(alpha: 0.3))),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text('WARNING: This action is irreversible. All your data, stats, and progress will be permanently deleted.', style: TextStyle(fontFamily: 'Courier New', fontSize: 12, color: Colors.red, height: 1.4)),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _isDeleting ? null : _deleteAccount,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.black,
-                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                            child: Text(_isDeleting ? '...' : 'CONFIRM DELETE', style: const TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 1)),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => setState(() => _showDeleteConfirm = false),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.zinc400,
-                              side: const BorderSide(color: AppColors.zinc700),
-                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                            child: const Text('CANCEL', style: TextStyle(fontFamily: 'Courier New', fontWeight: FontWeight.bold, letterSpacing: 1)),
-                          ),
-                        ),
-                      ],
-                    ),
+                    Text('⚠️ This is permanent', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.error)),
+                    const SizedBox(height: 6),
+                    Text('All your data, stats, and progress will be permanently deleted. This cannot be undone.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted, height: 1.5)),
+                    const SizedBox(height: 14),
+                    Row(children: [
+                      Expanded(child: SizedBox(height: 44, child: ElevatedButton(
+                        onPressed: _isDeleting ? null : _deleteAccount,
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                        child: Text(_isDeleting ? 'Deleting...' : 'Yes, Delete', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+                      ))),
+                      const SizedBox(width: 10),
+                      Expanded(child: SizedBox(height: 44, child: OutlinedButton(
+                        onPressed: () => setState(() => _showDeleteConfirm = false),
+                        style: OutlinedButton.styleFrom(side: const BorderSide(color: AppColors.border), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                        child: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13, color: AppColors.textSecondary)),
+                      ))),
+                    ]),
                   ],
                 ),
-              ),
-            ],
-
+              ).animate().fadeIn().scale(begin: const Offset(0.98, 0.98)),
             const SizedBox(height: 40),
           ],
         ),
@@ -241,72 +209,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  final String title;
-  final Color? color;
-  const _SectionTitle({required this.title, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Text(title.toUpperCase(), style: TextStyle(fontFamily: 'Courier New', fontSize: 10, fontWeight: FontWeight.bold, color: color ?? AppColors.zinc500, letterSpacing: 2)),
-    );
-  }
-}
-
-class _InfoCard extends StatelessWidget {
-  final List<Widget> children;
-  const _InfoCard({required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(border: Border.all(color: AppColors.zinc800)),
-      child: Column(children: children),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  const _InfoRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.zinc900))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label.toUpperCase(), style: const TextStyle(fontFamily: 'Courier New', fontSize: 10, color: AppColors.zinc500, letterSpacing: 1)),
-          Text(value, style: const TextStyle(fontFamily: 'Courier New', fontSize: 12, color: AppColors.zinc300, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-}
-
-class _LinkCard extends StatelessWidget {
-  final List<_LinkItem> items;
-  const _LinkCard({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(border: Border.all(color: AppColors.zinc800)),
-      child: Column(children: items),
-    );
-  }
-}
-
-class _LinkItem extends StatelessWidget {
+class _NavLink extends StatelessWidget {
   final IconData icon;
   final String label;
+  final Color color;
   final VoidCallback onTap;
-  const _LinkItem({required this.icon, required this.label, required this.onTap});
+  final bool isLast;
+  const _NavLink({required this.icon, required this.label, required this.color, required this.onTap, this.isLast = false});
 
   @override
   Widget build(BuildContext context) {
@@ -314,15 +223,14 @@ class _LinkItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.zinc900))),
-        child: Row(
-          children: [
-            Icon(icon, color: AppColors.zinc400, size: 18),
-            const SizedBox(width: 12),
-            Expanded(child: Text(label.toUpperCase(), style: const TextStyle(fontFamily: 'Courier New', fontSize: 12, color: AppColors.zinc300, letterSpacing: 1))),
-            const Icon(Icons.chevron_right, color: AppColors.zinc600, size: 18),
-          ],
-        ),
+        decoration: BoxDecoration(border: isLast ? null : const Border(bottom: BorderSide(color: AppColors.border))),
+        child: Row(children: [
+          Container(padding: const EdgeInsets.all(7), decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+              child: Icon(icon, color: color, size: 16)),
+          const SizedBox(width: 12),
+          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary))),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 18),
+        ]),
       ),
     );
   }
