@@ -95,9 +95,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
               decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(24), border: Border.all(color: accent.withValues(alpha: 0.3))),
               child: Icon(Icons.mark_chat_read_rounded, color: accent, size: 40),
             ).animate().scale(begin: const Offset(0.8, 0.8)),
-            Text('Thank You!', style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textPrimary), textAlign: TextAlign.center),
+            Text('Thank You!', style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textPrimary), textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             const SizedBox(height: 8),
-            Text('Your feedback helps us improve Argumento for everyone.', style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted, height: 1.5), textAlign: TextAlign.center),
+            Text('Your feedback helps us improve Argumento for everyone.', style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted, height: 1.5), textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             const SizedBox(height: 32),
             AccentButton(label: 'Back to Dashboard', accentColor: accent, onPressed: () => context.go('/dashboard')),
           ],
@@ -112,9 +116,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Share your experience', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+          Text('Share your experience', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
           const SizedBox(height: 4),
-          Text('Your feedback helps us build a better app.', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+          Text('Your feedback helps us build a better app.', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
           const SizedBox(height: 20),
 
           _FbField(label: 'How would you describe Argumento to a friend?', controller: _descCtrl, maxLines: 3, accent: accent),
@@ -182,7 +190,9 @@ class _FbField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, height: 1.4)),
+      Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, height: 1.4),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
       const SizedBox(height: 8),
       TextField(
         controller: controller,
@@ -211,7 +221,9 @@ class _FbRadio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, height: 1.4)),
+      Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary, height: 1.4),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
       const SizedBox(height: 8),
       ...options.map((opt) {
         final isSelected = value == opt.$1;
@@ -237,7 +249,9 @@ class _FbRadio extends StatelessWidget {
                 child: isSelected ? const Icon(Icons.check_rounded, size: 10, color: Colors.black) : null,
               ),
               const SizedBox(width: 12),
-              Text(opt.$2, style: GoogleFonts.inter(fontSize: 13, color: isSelected ? accent : AppColors.textSecondary, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400)),
+              Text(opt.$2, style: GoogleFonts.inter(fontSize: 13, color: isSelected ? accent : AppColors.textSecondary, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             ]),
           ),
         );
@@ -259,9 +273,13 @@ class _FbScale extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+      Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
       const SizedBox(height: 2),
-      Text(subLabel, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+      Text(subLabel, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
       const SizedBox(height: 10),
       Row(
         children: List.generate(max - min + 1, (i) {

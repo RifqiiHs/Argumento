@@ -122,8 +122,12 @@ class AppDrawer extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user?.username ?? 'Argumento', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                      Text('${user?.totalExp ?? 0} XP', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+                      Text(user?.username ?? 'Argumento', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
+                      Text('${user?.totalExp ?? 0} XP', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     ],
                   ),
                 ],

@@ -109,7 +109,9 @@ class _GameSetupWidgetState extends State<GameSetupWidget> {
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(widget.mode == 'practice' ? 'Practice Setup' : 'Daily Setup',
                         style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                    Text('Select topics to include', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                    Text('Select topics to include', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                   ]),
                   const Spacer(),
                   if (widget.mode == 'practice')
@@ -153,8 +155,12 @@ class _GameSetupWidgetState extends State<GameSetupWidget> {
                           ),
                           const SizedBox(width: 14),
                           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(category['name'] as String, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textMuted)),
-                            Text('Complete ${category['requirements']} to unlock', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDisabled)),
+                            Text(category['name'] as String, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
+                            Text('Complete ${category['requirements']} to unlock', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDisabled),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                           ])),
                         ],
                       ),
@@ -182,8 +188,12 @@ class _GameSetupWidgetState extends State<GameSetupWidget> {
                               ),
                               const SizedBox(width: 12),
                               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Text(category['name'] as String, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                                Text(category['description'] as String, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+                                Text(category['name'] as String, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
+                                Text(category['description'] as String, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                               ])),
                               if (selectedInCategory > 0)
                                 StatusBadge(label: '$selectedInCategory selected', color: categoryColor),
@@ -213,7 +223,9 @@ class _GameSetupWidgetState extends State<GameSetupWidget> {
                                       Icon(Icons.check_rounded, size: 12, color: categoryColor),
                                       const SizedBox(width: 4),
                                     ],
-                                    Text(t, style: GoogleFonts.inter(fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? categoryColor : AppColors.textSecondary)),
+                                    Text(t, style: GoogleFonts.inter(fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, color: isSelected ? categoryColor : AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                                   ]),
                                 ),
                               );
@@ -249,7 +261,9 @@ class _GameSetupWidgetState extends State<GameSetupWidget> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Posts', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                                Text('Posts', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                                 Row(
                                   children: [
                                     _CounterBtn(icon: Icons.remove_rounded, onTap: widget.postAmount > 1 ? () => widget.onPostAmountChanged(widget.postAmount - 1) : null),
@@ -281,7 +295,9 @@ class _GameSetupWidgetState extends State<GameSetupWidget> {
                     Row(children: [
                       const Icon(Icons.info_outline_rounded, size: 13, color: AppColors.textMuted),
                       const SizedBox(width: 6),
-                      Text('AI-generated content may occasionally be inaccurate', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+                      Text('AI-generated content may occasionally be inaccurate', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     ]),
                   ],
                 ),

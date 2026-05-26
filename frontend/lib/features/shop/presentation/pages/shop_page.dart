@@ -76,14 +76,18 @@ class _ShopPageState extends State<ShopPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Item Shop', style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                  Text('Item Shop', style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(color: accent.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10), border: Border.all(color: accent.withValues(alpha: 0.3))),
                     child: Row(children: [
                       Icon(Icons.toll_rounded, color: accent, size: 16),
                       const SizedBox(width: 6),
-                      Text('${user?.totalCoins ?? 0}', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: accent)),
+                      Text('${user?.totalCoins ?? 0}', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: accent),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     ]),
                   ),
                 ],
@@ -102,7 +106,9 @@ class _ShopPageState extends State<ShopPage> {
                 children: [
                   SectionLabel(text: 'Interface Themes'),
                   const SizedBox(height: 4),
-                  Text('Customize the accent color of the entire interface', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                  Text('Customize the accent color of the entire interface', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                   const SizedBox(height: 16),
                   // Grid
                   GridView.count(
@@ -138,7 +144,9 @@ class _ShopPageState extends State<ShopPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('How to Earn Coins', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                        Text('How to Earn Coins', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                         const SizedBox(height: 12),
                         _CoinInfo(icon: Icons.check_circle_rounded, color: AppColors.success, label: 'Correct answer', value: '+100 coins'),
                         const SizedBox(height: 8),
@@ -197,8 +205,10 @@ class _ThemeCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(theme.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-              Text(theme.description, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+              Text(theme.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary), overflow: TextOverflow.ellipsis, maxLines: 1),
+              Text(theme.description, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
               const SizedBox(height: 10),
               if (isOwned)
                 SizedBox(
@@ -221,7 +231,9 @@ class _ThemeCard extends StatelessWidget {
                 Row(children: [
                   Icon(Icons.toll_rounded, size: 14, color: canAfford ? themeColor : AppColors.textMuted),
                   const SizedBox(width: 4),
-                  Text('${theme.price}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: canAfford ? themeColor : AppColors.textMuted)),
+                  Text('${theme.price}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: canAfford ? themeColor : AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                   const Spacer(),
                   SizedBox(
                     height: 32,
@@ -259,9 +271,13 @@ class _CoinInfo extends StatelessWidget {
     return Row(children: [
       Icon(icon, color: color, size: 16),
       const SizedBox(width: 10),
-      Text(label, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary)),
+      Text(label, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
       const Spacer(),
-      Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: color)),
+      Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: color),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
     ]);
   }
 }

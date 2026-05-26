@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/api_service.dart';
 import '../../../../core/utils/app_state.dart';
@@ -233,7 +234,8 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('POST ${_index + 1} / ${_levelData!.posts.length}',
-                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted, letterSpacing: 1)),
+                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted, letterSpacing: 1),
+                  overflow: TextOverflow.ellipsis, maxLines: 2),
               LinearProgressIndicator(
                 value: (_index + 1) / _levelData!.posts.length,
                 backgroundColor: AppColors.bg700,
@@ -316,7 +318,7 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
               Text(
                 isCorrect ? 'CORRECT ASSESSMENT' : 'ASSESSMENT FAILED',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: isCorrect ? Colors.green : Colors.red, letterSpacing: 1),
-              ),
+                  overflow: TextOverflow.ellipsis, maxLines: 2),
             ],
           ),
           const SizedBox(height: 10),
@@ -353,15 +355,18 @@ class _CampaignLevelPageState extends State<CampaignLevelPage> {
             TextField(
               controller: _reasonCtrl,
               maxLines: 3,
-              style: const TextStyle(color: Colors.red, fontSize: 13),
+              // FIX: setState on every change so button enable/disable updates live
+              onChanged: (_) => setState(() {}),
+              style: GoogleFonts.inter(color: AppColors.error, fontSize: 13),
               decoration: InputDecoration(
-                hintText: 'Describe the violation...',
-                hintStyle: const TextStyle(color: Color(0xFF7F1D1D), fontSize: 12),
+                hintText: 'Describe the violation or manipulation tactic you detected...',
+                hintStyle: GoogleFonts.inter(color: AppColors.errorBg.withValues(alpha: 0.6), fontSize: 12),
                 filled: true,
-                fillColor: Colors.black.withValues(alpha: 0.5),
-                border: OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.5))),
-                focusedBorder: const OutlineInputBorder(borderRadius: BorderRadius.zero, borderSide: BorderSide(color: Colors.red, width: 2)),
-                contentPadding: const EdgeInsets.all(12),
+                fillColor: AppColors.bg800,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.error.withValues(alpha: 0.5))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.error.withValues(alpha: 0.5))),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
+                contentPadding: const EdgeInsets.all(14),
               ),
             ),
             const SizedBox(height: 10),

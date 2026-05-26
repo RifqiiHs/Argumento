@@ -83,8 +83,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(user?.username ?? '—', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                    Text(user?.email ?? '—', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                    Text(user?.username ?? '—', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
+                    Text(user?.email ?? '—', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     const SizedBox(height: 6),
                     Row(children: [
                       user?.isVerified == true
@@ -108,10 +112,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     Row(children: [
                       const Icon(Icons.info_outline_rounded, color: AppColors.warning, size: 18),
                       const SizedBox(width: 8),
-                      Text('Email not verified', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.warning)),
+                      Text('Email not verified', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.warning),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     ]),
                     const SizedBox(height: 6),
-                    Text('Verify your email to unlock the Daily Shift.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+                    Text('Verify your email to unlock the Daily Shift.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     const SizedBox(height: 12),
                     SizedBox(
                       height: 40,
@@ -181,9 +189,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('⚠️ This is permanent', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.error)),
+                    Text('⚠️ This is permanent', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.error),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     const SizedBox(height: 6),
-                    Text('All your data, stats, and progress will be permanently deleted. This cannot be undone.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted, height: 1.5)),
+                    Text('All your data, stats, and progress will be permanently deleted. This cannot be undone.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted, height: 1.5),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                     const SizedBox(height: 14),
                     Row(children: [
                       Expanded(child: SizedBox(height: 44, child: ElevatedButton(

@@ -102,7 +102,9 @@ class _GameStateWidgetState extends State<GameStateWidget> {
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(widget.currentPost.headline, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-                          Text('Post #${widget.currentIndex + 1}', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+                          Text('Post #${widget.currentIndex + 1}', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                         ]),
                       ),
                       Container(
@@ -158,10 +160,13 @@ class _GameStateWidgetState extends State<GameStateWidget> {
                 Icon(isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded, color: color, size: 20),
                 const SizedBox(width: 8),
                 Text(isCorrect ? 'Correct Assessment' : 'Incorrect Assessment',
-                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: color),
+                    overflow: TextOverflow.ellipsis, maxLines: 2),
               ]),
               const SizedBox(height: 8),
-              Text(widget.verdict?.message ?? '', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary, height: 1.5)),
+              Text(widget.verdict?.message ?? '', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             ],
           ),
         ).animate().fadeIn().scale(begin: const Offset(0.98, 0.98)),
@@ -180,7 +185,9 @@ class _GameStateWidgetState extends State<GameStateWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Rejection Report', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.error)),
+              Text('Rejection Report', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.error),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
               GestureDetector(
                 onTap: () => setState(() => _isRejecting = false),
                 child: Text('Cancel', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
@@ -228,7 +235,9 @@ class _GameStateWidgetState extends State<GameStateWidget> {
 
     return Column(
       children: [
-        Text('Your verdict?', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+        Text('Your verdict?', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
         const SizedBox(height: 10),
         GameActionButtons(
           onApprove: widget.onApprove,
@@ -266,7 +275,9 @@ class _TabBtn extends StatelessWidget {
             children: [
               Icon(icon, size: 16, color: isActive ? accent : AppColors.textMuted),
               const SizedBox(width: 6),
-              Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: isActive ? FontWeight.w600 : FontWeight.w400, color: isActive ? accent : AppColors.textMuted)),
+              Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: isActive ? FontWeight.w600 : FontWeight.w400, color: isActive ? accent : AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             ],
           ),
         ),

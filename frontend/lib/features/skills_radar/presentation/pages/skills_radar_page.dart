@@ -40,7 +40,9 @@ class SkillsRadarPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Visualize your performance across all content categories.', style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted, height: 1.5)),
+            Text('Visualize your performance across all content categories.', style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted, height: 1.5),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             const SizedBox(height: 20),
 
             // Radar Chart Card
@@ -69,7 +71,9 @@ class SkillsRadarPage extends StatelessWidget {
                             child: Icon(Icons.radar_rounded, color: accent, size: 18),
                           ),
                           const SizedBox(width: 10),
-                          Text('Performance Radar', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                          Text('Performance Radar', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                         ]),
                         const SizedBox(height: 20),
                         SizedBox(
@@ -158,11 +162,17 @@ class _StatBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(stat.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+              Text(stat.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
               Row(children: [
-                Text('${stat.correct}/${stat.total}', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+                Text('${stat.correct}/${stat.total}', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                 const SizedBox(width: 8),
-                Text(pctStr, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: accent)),
+                Text(pctStr, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: accent),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
               ]),
             ],
           ),
@@ -203,7 +213,9 @@ class _OverallCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Overall Performance', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+          Text('Overall Performance', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -230,9 +242,13 @@ class _OverallItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(children: [
-        Text(value, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: accent)),
+        Text(value, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: accent),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
         const SizedBox(height: 2),
-        Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted), textAlign: TextAlign.center),
+        Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted), textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
       ]),
     );
   }

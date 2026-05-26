@@ -215,7 +215,8 @@ class _SignInPageState extends State<SignInPage> {
                 children: [
                   Text("Don't have an account? ",
                       style: GoogleFonts.inter(
-                          fontSize: 14, color: AppColors.textMuted)),
+                          fontSize: 14, color: AppColors.textMuted),
+                      overflow: TextOverflow.ellipsis, maxLines: 2),
                   GestureDetector(
                     onTap: () => context.go('/sign-up'),
                     child: Text('Sign Up',

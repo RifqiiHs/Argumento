@@ -81,7 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             const SizedBox(width: 16),
                             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Text(_profileUser!.username, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                              Text(_profileUser!.username, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary), overflow: TextOverflow.ellipsis, maxLines: 1),
                               const SizedBox(height: 4),
                               Text(
                                 'Member since ${_profileUser!.createdAt != null ? DateFormat('MMM yyyy').format(_profileUser!.createdAt!) : 'Unknown'}',
@@ -121,7 +121,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Campaign Progress', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                              Text('Campaign Progress', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                               const SizedBox(height: 12),
                               ..._profileUser!.campaignProgress.map((cp) => Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
@@ -130,7 +132,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       color: cp.isCompleted ? profileAccent : AppColors.textMuted, size: 18),
                                   const SizedBox(width: 10),
                                   Expanded(child: Text(cp.campaignId.replaceAll('_', ' '), style: GoogleFonts.inter(fontSize: 13, color: cp.isCompleted ? profileAccent : AppColors.textSecondary, fontWeight: FontWeight.w500))),
-                                  Text('${cp.levelsCompleted.length} levels', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+                                  Text('${cp.levelsCompleted.length} levels', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                                 ]),
                               )),
                             ],
@@ -147,7 +151,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Skill Ratings', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                              Text('Skill Ratings', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                               const SizedBox(height: 12),
                               ..._profileUser!.stats.map((s) {
                                 final pct = s.total > 0 ? s.correct / s.total : 0.0;
@@ -155,8 +161,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   padding: const EdgeInsets.only(bottom: 10),
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                      Text(s.name, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary)),
-                                      Text('${(pct * 100).toStringAsFixed(0)}%', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: profileAccent)),
+                                      Text(s.name, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
+                                      Text('${(pct * 100).toStringAsFixed(0)}%', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: profileAccent),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                                     ]),
                                     const SizedBox(height: 4),
                                     ClipRRect(borderRadius: BorderRadius.circular(4),

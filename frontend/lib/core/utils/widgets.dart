@@ -1,28 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 
-// ============================================================
-// REUSABLE WIDGET LIBRARY — Redesigned
-// ============================================================
-
-// ── App Bar ─────────────────────────────────────────────────
+// ── App Bar ──────────────────────────────────────────────────
 class ArgumentoAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final List<Widget>? actions;
   final bool showBack;
   final Widget? leading;
-  final Color? accentColor;
 
-  const ArgumentoAppBar({
-    super.key,
-    this.title,
-    this.actions,
-    this.showBack = false,
-    this.leading,
-    this.accentColor,
-  });
+  const ArgumentoAppBar({super.key, this.title, this.actions, this.showBack = false, this.leading});
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +22,8 @@ class ArgumentoAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: AppColors.bg700,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: const Icon(Icons.arrow_back_ios_new, size: 14, color: AppColors.textSecondary),
+                decoration: BoxDecoration(color: AppColors.bg700, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppColors.border)),
+                child: const Icon(Icons.arrow_back_ios_new_rounded, size: 14, color: AppColors.textSecondary),
               ),
               onPressed: () => Navigator.of(context).pop(),
             )
@@ -49,14 +32,7 @@ class ArgumentoAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? Text(title!, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary))
           : null,
       actions: actions,
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: AppColors.border),
-      ),
-      systemOverlayStyle: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-      ),
+      bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(height: 1, color: AppColors.border)),
     );
   }
 
@@ -73,83 +49,49 @@ class AccentButton extends StatelessWidget {
   final Widget? icon;
   final bool small;
 
-  const AccentButton({
-    super.key,
-    required this.label,
-    this.onPressed,
-    this.isLoading = false,
-    this.accentColor,
-    this.icon,
-    this.small = false,
-  });
+  const AccentButton({super.key, required this.label, this.onPressed, this.isLoading = false, this.accentColor, this.icon, this.small = false});
 
   @override
   Widget build(BuildContext context) {
     final color = accentColor ?? AppColors.primary;
     final isDisabled = isLoading || onPressed == null;
-
     return SizedBox(
       width: double.infinity,
       height: small ? 44 : 52,
       child: AnimatedOpacity(
         opacity: isDisabled ? 0.6 : 1.0,
         duration: const Duration(milliseconds: 200),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: isDisabled
-                ? null
-                : LinearGradient(
-                    colors: [color, color.withGreen((color.green * 0.85).round().clamp(0, 255))],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-            color: isDisabled ? color.withValues(alpha: 0.4) : null,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: isDisabled ? null : [
-              BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
-            ],
+        child: ElevatedButton(
+          onPressed: isDisabled ? null : onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            shadowColor: Colors.transparent,
+            foregroundColor: Colors.black,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            padding: EdgeInsets.symmetric(vertical: small ? 10 : 14),
+            disabledBackgroundColor: color.withValues(alpha: 0.4),
           ),
-          child: ElevatedButton(
-            onPressed: isDisabled ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.symmetric(vertical: small ? 10 : 14),
-            ),
-            child: isLoading
-                ? SizedBox(
-                    width: 20, height: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.black.withValues(alpha: 0.7),
-                      strokeWidth: 2.5,
+          child: isLoading
+              ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black.withValues(alpha: 0.7), strokeWidth: 2.5))
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[icon!, const SizedBox(width: 8)],
+                    Flexible(
+                      child: Text(label,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: small ? 13 : 15, color: Colors.black)),
                     ),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (icon != null) ...[icon!, const SizedBox(width: 8)],
-                      Text(
-                        label,
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w700,
-                          fontSize: small ? 13 : 15,
-                          color: Colors.black,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
+                  ],
+                ),
         ),
       ),
     );
   }
 }
 
-// ── Secondary/Outlined Button ────────────────────────────────
+// ── Outlined Button ──────────────────────────────────────────
 class ArgumentoOutlinedButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -158,28 +100,18 @@ class ArgumentoOutlinedButton extends StatelessWidget {
   final Widget? icon;
   final bool small;
 
-  const ArgumentoOutlinedButton({
-    super.key,
-    required this.label,
-    this.onPressed,
-    this.borderColor,
-    this.textColor,
-    this.icon,
-    this.small = false,
-  });
+  const ArgumentoOutlinedButton({super.key, required this.label, this.onPressed, this.borderColor, this.textColor, this.icon, this.small = false});
 
   @override
   Widget build(BuildContext context) {
-    final bColor = borderColor ?? AppColors.border;
-    final tColor = textColor ?? AppColors.textSecondary;
     return SizedBox(
       width: double.infinity,
       height: small ? 44 : 52,
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: tColor,
-          side: BorderSide(color: bColor, width: 1.5),
+          foregroundColor: textColor ?? AppColors.textSecondary,
+          side: BorderSide(color: borderColor ?? AppColors.border, width: 1.5),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           backgroundColor: AppColors.bg700,
         ),
@@ -188,14 +120,7 @@ class ArgumentoOutlinedButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[icon!, const SizedBox(width: 8)],
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.w600,
-                fontSize: small ? 12 : 14,
-                color: tColor,
-              ),
-            ),
+            Flexible(child: Text(label, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: small ? 12 : 14, color: textColor ?? AppColors.textSecondary))),
           ],
         ),
       ),
@@ -211,14 +136,7 @@ class StatCard extends StatelessWidget {
   final Widget? icon;
   final Color? accentColor;
 
-  const StatCard({
-    super.key,
-    required this.label,
-    required this.value,
-    this.subValue,
-    this.icon,
-    this.accentColor,
-  });
+  const StatCard({super.key, required this.label, required this.value, this.subValue, this.icon, this.accentColor});
 
   @override
   Widget build(BuildContext context) {
@@ -226,68 +144,42 @@ class StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.bg700, AppColors.bg800],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: const LinearGradient(colors: [AppColors.bg700, AppColors.bg800], begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 2)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(
-                  label,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textMuted,
-                    letterSpacing: 0.3,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: Text(label,
+                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textMuted),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
               ),
               if (icon != null) ...[
                 const SizedBox(width: 4),
                 Container(
                   padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
                   child: icon!,
                 ),
               ],
             ],
           ),
           const SizedBox(height: 10),
-          Text(
-            value,
-            style: GoogleFonts.inter(
-              fontSize: 26,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-              height: 1,
-            ),
-          ),
+          Text(value, style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.textPrimary, height: 1),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
           if (subValue != null) ...[
             const SizedBox(height: 4),
-            Text(
-              subValue!,
-              style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
-            ),
+            Text(subValue!, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
           ],
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Container(height: 2, decoration: BoxDecoration(color: color.withValues(alpha: 0.4), borderRadius: BorderRadius.circular(2))),
         ],
       ),
@@ -300,7 +192,6 @@ class SectionHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
   final Widget? trailing;
-
   const SectionHeader({super.key, required this.title, this.subtitle, this.trailing});
 
   @override
@@ -314,10 +205,14 @@ class SectionHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: -0.5)),
+                Text(title, style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: -0.5),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                 if (subtitle != null) ...[
                   const SizedBox(height: 2),
-                  Text(subtitle!, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                  Text(subtitle!, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
                 ],
               ],
             ),
@@ -363,15 +258,9 @@ class ArgumentoTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.2,
-          ),
-        ),
+        Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -387,27 +276,12 @@ class ArgumentoTextField extends StatelessWidget {
             fillColor: AppColors.bg600,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: accentColor, width: 1.5),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.border)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: accentColor, width: 1.5)),
             errorText: errorText,
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.error),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-            ),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
             errorStyle: GoogleFonts.inter(color: AppColors.error, fontSize: 11),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
@@ -421,7 +295,6 @@ class ArgumentoTextField extends StatelessWidget {
 class LoadingOverlay extends StatelessWidget {
   final String? message;
   final Color accentColor;
-
   const LoadingOverlay({super.key, this.message, this.accentColor = AppColors.primary});
 
   @override
@@ -430,20 +303,13 @@ class LoadingOverlay extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            width: 44, height: 44,
-            child: CircularProgressIndicator(
-              color: accentColor,
-              strokeWidth: 3,
-              backgroundColor: accentColor.withValues(alpha: 0.1),
-            ),
-          ),
+          SizedBox(width: 44, height: 44,
+              child: CircularProgressIndicator(color: accentColor, strokeWidth: 3, backgroundColor: accentColor.withValues(alpha: 0.1))),
           if (message != null) ...[
             const SizedBox(height: 20),
-            Text(
-              message!,
-              style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13),
-            ),
+            Text(message!, style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
           ],
         ],
       ),
@@ -456,7 +322,6 @@ class EmptyState extends StatelessWidget {
   final String title;
   final String? subtitle;
   final Widget? icon;
-
   const EmptyState({super.key, required this.title, this.subtitle, this.icon});
 
   @override
@@ -470,27 +335,19 @@ class EmptyState extends StatelessWidget {
             if (icon != null) ...[
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.bg700,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
-                ),
+                decoration: BoxDecoration(color: AppColors.bg700, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border)),
                 child: icon!,
               ),
               const SizedBox(height: 20),
             ],
-            Text(
-              title,
-              style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
+            Text(title, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textSecondary), textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             if (subtitle != null) ...[
               const SizedBox(height: 6),
-              Text(
-                subtitle!,
-                style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted, height: 1.5),
-                textAlign: TextAlign.center,
-              ),
+              Text(subtitle!, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted, height: 1.5), textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             ],
           ],
         ),
@@ -507,28 +364,22 @@ class ArgumentoSnackBar {
       SnackBar(
         content: Row(
           children: [
-            Icon(
-              isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
-              color: isError ? AppColors.error : AppColors.primary,
-              size: 18,
-            ),
+            Icon(isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
+                color: isError ? AppColors.error : AppColors.primary, size: 18),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(
-                message,
-                style: GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
-              ),
+              child: Text(message,
+                  style: GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis),
             ),
           ],
         ),
         backgroundColor: AppColors.bg700,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: isError ? AppColors.errorBg : AppColors.primaryBg),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: isError ? AppColors.errorBg : AppColors.primaryBg)),
         margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 4),
         elevation: 0,
       ),
     );
@@ -540,19 +391,12 @@ class InfoCard extends StatelessWidget {
   final List<Widget> children;
   final Color? borderColor;
   final Color? bgColor;
-  final EdgeInsets? padding;
-
-  const InfoCard({super.key, required this.children, this.borderColor, this.bgColor, this.padding});
+  const InfoCard({super.key, required this.children, this.borderColor, this.bgColor});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: padding ?? const EdgeInsets.all(0),
-      decoration: BoxDecoration(
-        color: bgColor ?? AppColors.bg800,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor ?? AppColors.border),
-      ),
+      decoration: BoxDecoration(color: bgColor ?? AppColors.bg800, borderRadius: BorderRadius.circular(12), border: Border.all(color: borderColor ?? AppColors.border)),
       child: Column(children: children),
     );
   }
@@ -564,33 +408,34 @@ class InfoRow extends StatelessWidget {
   final String value;
   final Color? valueColor;
   final bool isLast;
-
   const InfoRow({super.key, required this.label, required this.value, this.valueColor, this.isLast = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        border: isLast ? null : const Border(bottom: BorderSide(color: AppColors.border)),
-      ),
+      decoration: BoxDecoration(border: isLast ? null : const Border(bottom: BorderSide(color: AppColors.border))),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
-          Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: valueColor ?? AppColors.textSecondary)),
+          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted))),
+          const SizedBox(width: 12),
+          Flexible(
+            child: Text(value,
+                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: valueColor ?? AppColors.textSecondary),
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis),
+          ),
         ],
       ),
     );
   }
 }
 
-// ── Badge / Status Chip ───────────────────────────────────────
+// ── Status Badge ──────────────────────────────────────────────
 class StatusBadge extends StatelessWidget {
   final String label;
   final Color color;
   final Color? bgColor;
-
   const StatusBadge({super.key, required this.label, required this.color, this.bgColor});
 
   @override
@@ -598,19 +443,18 @@ class StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: bgColor ?? color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: color),
-      ),
+          color: bgColor ?? color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.3))),
+      child: Text(label,
+          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis),
     );
   }
 }
 
-// ── Divider with label ────────────────────────────────────────
+// ── Labeled Divider ───────────────────────────────────────────
 class LabeledDivider extends StatelessWidget {
   final String label;
   const LabeledDivider({super.key, required this.label});
@@ -640,45 +484,26 @@ class SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding ?? const EdgeInsets.only(bottom: 10),
-      child: Text(
-        text.toUpperCase(),
-        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
-      ),
+      child: Text(text.toUpperCase(),
+          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
     );
   }
 }
 
-// ── Approve / Reject Buttons ──────────────────────────────────
+// ── Game Action Buttons ───────────────────────────────────────
 class GameActionButtons extends StatelessWidget {
   final VoidCallback onApprove;
   final VoidCallback onReject;
   final bool isDisabled;
-
   const GameActionButtons({super.key, required this.onApprove, required this.onReject, this.isDisabled = false});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(
-          child: _ActionBtn(
-            label: 'Approve',
-            icon: Icons.check_circle_outline_rounded,
-            color: AppColors.success,
-            bg: AppColors.successBg,
-            onTap: isDisabled ? null : onApprove,
-          ),
-        ),
+        Expanded(child: _ActionBtn(label: 'Approve', icon: Icons.check_circle_outline_rounded, color: AppColors.success, bg: AppColors.successBg, onTap: isDisabled ? null : onApprove)),
         const SizedBox(width: 12),
-        Expanded(
-          child: _ActionBtn(
-            label: 'Reject',
-            icon: Icons.cancel_outlined,
-            color: AppColors.error,
-            bg: AppColors.errorBg,
-            onTap: isDisabled ? null : onReject,
-          ),
-        ),
+        Expanded(child: _ActionBtn(label: 'Reject', icon: Icons.cancel_outlined, color: AppColors.error, bg: AppColors.errorBg, onTap: isDisabled ? null : onReject)),
       ],
     );
   }
@@ -690,7 +515,6 @@ class _ActionBtn extends StatelessWidget {
   final Color color;
   final Color bg;
   final VoidCallback? onTap;
-
   const _ActionBtn({required this.label, required this.icon, required this.color, required this.bg, this.onTap});
 
   @override
@@ -702,17 +526,15 @@ class _ActionBtn extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withValues(alpha: 0.3)),
-          ),
+          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10), border: Border.all(color: color.withValues(alpha: 0.3))),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, color: color, size: 24),
               const SizedBox(height: 4),
-              Text(label, style: GoogleFonts.inter(color: color, fontWeight: FontWeight.w700, fontSize: 13)),
+              Text(label, style: GoogleFonts.inter(color: color, fontWeight: FontWeight.w700, fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2),
             ],
           ),
         ),

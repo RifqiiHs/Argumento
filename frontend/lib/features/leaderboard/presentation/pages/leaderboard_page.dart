@@ -11,10 +11,10 @@ import '../../../../core/utils/widgets.dart';
 import '../../../shared/bottom_nav.dart';
 
 const _tabs = [
-  {'key': 'totalExp', 'label': 'EXP', 'icon': Icons.bolt_rounded},
-  {'key': 'bestStreak', 'label': 'Streak', 'icon': Icons.local_fire_department_rounded},
-  {'key': 'postsProcessed', 'label': 'Posts', 'icon': Icons.article_rounded},
-  {'key': 'postsCorrect', 'label': 'Correct', 'icon': Icons.gps_fixed_rounded},
+  {'key': 'totalExp',       'label': 'EXP',     'icon': Icons.bolt_rounded},
+  {'key': 'bestStreak',     'label': 'Streak',   'icon': Icons.local_fire_department_rounded},
+  {'key': 'postsProcessed', 'label': 'Posts',    'icon': Icons.article_rounded},
+  {'key': 'postsCorrect',   'label': 'Correct',  'icon': Icons.gps_fixed_rounded},
 ];
 
 class LeaderboardPage extends StatefulWidget {
@@ -51,7 +51,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       bottomNavigationBar: const AppBottomNav(currentIndex: 3),
       body: Column(
         children: [
-          // Tab selector
+          // Tab bar
           Container(
             padding: const EdgeInsets.all(12),
             color: AppColors.bg800,
@@ -73,7 +73,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Icon(t['icon'] as IconData, size: 16, color: isActive ? accent : AppColors.textMuted),
                         const SizedBox(height: 3),
-                        Text(t['label'] as String, style: GoogleFonts.inter(fontSize: 10, fontWeight: isActive ? FontWeight.w700 : FontWeight.w400, color: isActive ? accent : AppColors.textMuted)),
+                        Text(t['label'] as String,
+                            style: GoogleFonts.inter(fontSize: 10, fontWeight: isActive ? FontWeight.w700 : FontWeight.w400, color: isActive ? accent : AppColors.textMuted),
+                            overflow: TextOverflow.ellipsis),
                       ]),
                     ),
                   ),
@@ -95,9 +97,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     child: Text('You', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: accent)),
                   ),
                   const SizedBox(width: 10),
-                  Text('Rank #${myRank + 1}', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-                  const Spacer(),
-                  Text('${_entries[myRank].getValueByField(_activeTab)} ${_activeTab == 'totalExp' ? 'XP' : ''}',
+                  Expanded(
+                    child: Text('Rank #${myRank + 1}',
+                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                  Text('${_entries[myRank].getValueByField(_activeTab)}${_activeTab == 'totalExp' ? ' XP' : ''}',
                       style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: accent)),
                 ],
               ),
@@ -108,7 +113,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             child: _isLoading
                 ? LoadingOverlay(accentColor: accent)
                 : _entries.isEmpty
-                    ? EmptyState(title: 'No data yet', subtitle: 'Be the first on the leaderboard!', icon: const Icon(Icons.emoji_events_rounded, size: 40, color: AppColors.textMuted))
+                    ? EmptyState(
+                        title: 'No data yet',
+                        subtitle: 'Be the first on the leaderboard!',
+                        icon: const Icon(Icons.emoji_events_rounded, size: 40, color: AppColors.textMuted))
                     : ListView.builder(
                         itemCount: _entries.length,
                         itemBuilder: (ctx, i) {
@@ -127,31 +135,38 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                               ),
                               child: Row(
                                 children: [
-                                  // Rank badge
                                   SizedBox(
                                     width: 36,
                                     child: i < 3
-                                        ? Text(['🥇', '🥈', '🥉'][i], style: const TextStyle(fontSize: 20), textAlign: TextAlign.center)
-                                        : Text('#${i + 1}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textMuted), textAlign: TextAlign.center),
+                                        ? Text(['🥇','🥈','🥉'][i], style: const TextStyle(fontSize: 20), textAlign: TextAlign.center)
+                                        : Text('#${i+1}',
+                                            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textMuted),
+                                            textAlign: TextAlign.center),
                                   ),
                                   const SizedBox(width: 12),
-                                  // Avatar
                                   Container(
-                                    width: 38, height: 38,
+                                    width: 36, height: 36,
                                     decoration: BoxDecoration(
                                       color: isMe ? accent.withValues(alpha: 0.15) : AppColors.bg700,
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: Center(
-                                      child: Text(entry.username.substring(0, 1).toUpperCase(),
-                                          style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: isMe ? accent : AppColors.textSecondary)),
-                                    ),
+                                    child: Center(child: Text(
+                                      entry.username.isNotEmpty ? entry.username.substring(0, 1).toUpperCase() : '?',
+                                      style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: isMe ? accent : AppColors.textSecondary),
+                                    )),
                                   ),
                                   const SizedBox(width: 12),
-                                  Expanded(child: Text(entry.username, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: isMe ? accent : AppColors.textPrimary))),
+                                  Expanded(
+                                    child: Text(entry.username,
+                                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: isMe ? accent : AppColors.textPrimary),
+                                        overflow: TextOverflow.ellipsis),
+                                  ),
+                                  const SizedBox(width: 8),
                                   Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                                    Text('${entry.getValueByField(_activeTab)}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: isMe ? accent : AppColors.textPrimary)),
-                                    Text((_activeTab).replaceAll('_', ' '), style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted)),
+                                    Text('${entry.getValueByField(_activeTab)}',
+                                        style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: isMe ? accent : AppColors.textPrimary)),
+                                    Text(_activeTab.replaceAll('_', ' '),
+                                        style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted)),
                                   ]),
                                 ],
                               ),
